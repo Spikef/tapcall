@@ -2,8 +2,11 @@ import BaseHook from './base-hook';
 
 export default class AsyncSeriesWaterfallHook<
   Args extends [unknown, ...unknown[]],
-  Return = unknown,
-> extends BaseHook<Args, Return | void | Promise<Return | void>> {
+> extends BaseHook<Args, Args[0] | void | Promise<Args[0] | void>> {
+  call(...args: Args): Promise<Args[0]> {
+    return super.call(...args);
+  }
+
   protected _call(args: Args) {
     const newArgs: Args = [...args];
     let promise = Promise.resolve(newArgs[0]);

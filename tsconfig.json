@@ -2,7 +2,8 @@
   "extends": "./tsconfig.build.json",
   "compilerOptions": {
     "paths": {
-      "tapcall": ["src/index.ts"]
+      "tapcall": ["src/index"],
+      "tapcall/*": ["src/*"]
     }
   },
   "include": ["src", "test"]

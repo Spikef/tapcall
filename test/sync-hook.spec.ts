@@ -33,8 +33,8 @@ describe('SyncHook', () => {
     expect(mock4).toHaveBeenLastCalledWith('1', 2, 3);
     expect(mock5).toHaveBeenLastCalledWith('1', 2, 3);
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
+    // eslint-disable-next-line
     h3.call('x', 'y');
     expect(mock4).toHaveBeenLastCalledWith('x', 'y');
     expect(mock5).toHaveBeenLastCalledWith('x', 'y');
