@@ -1,0 +1,6 @@
+.idea/
+.vscode/
+.npmrc
+node_modules/
+coverage/
+.DS_Store
