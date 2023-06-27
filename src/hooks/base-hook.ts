@@ -33,7 +33,8 @@ export default class BaseHook<
     try {
       this._tap(option, callback);
     } catch (e) {
-      throw new Error(`[hook: ${this.name}.tap] ${e.message}`);
+      const err = e as Error;
+      throw new Error(`[hook: ${this.name}.tap] ${err.message}`);
     }
   }
 
@@ -44,7 +45,8 @@ export default class BaseHook<
     try {
       return this._call(args);
     } catch (e) {
-      throw new Error(`[hook: ${this.name}.call] ${e.message}`);
+      const err = e as Error;
+      throw new Error(`[hook: ${this.name}.call] ${err.message}`);
     }
   }
 

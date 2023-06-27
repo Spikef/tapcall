@@ -4,7 +4,7 @@ export default class SyncHook<
   Args extends unknown[] = never,
   Return = void,
 > extends BaseHook<Args, Return | void> {
-  _call(args) {
+  protected _call(args: Args) {
     return this.callbacks.map((cb) => cb(...args));
   }
 }

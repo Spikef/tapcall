@@ -2,15 +2,15 @@ import BaseHook from './base-hook';
 
 export default class SyncWaterfallHook<
   Args extends [unknown, ...unknown[]],
-  Return = unknown,
-> extends BaseHook<Args, Return | void> {
-  protected _call(args) {
-    let waterfall = args[0];
-    const rest = args.slice(1);
+> extends BaseHook<Args, Args[0] | undefined> {
+  protected _call(args: Args) {
+    const newArgs: Args = [...args];
     for (let i = 0; i < this.callbacks.length; i++) {
-      const result = this.callbacks[i](waterfall, ...rest);
-      if (result !== undefined) waterfall = result;
+      const waterfall = this.callbacks[i](...newArgs);
+      if (waterfall !== undefined) {
+        newArgs[0] = waterfall;
+      }
     }
-    return waterfall;
+    return newArgs[0];
   }
 }

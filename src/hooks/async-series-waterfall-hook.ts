@@ -4,18 +4,19 @@ export default class AsyncSeriesWaterfallHook<
   Args extends [unknown, ...unknown[]],
   Return = unknown,
 > extends BaseHook<Args, Return | void | Promise<Return | void>> {
-  protected _call(args) {
-    let waterfall = args[0];
-    let promise = Promise.resolve(waterfall);
-    const rest = args.slice(1);
+  protected _call(args: Args) {
+    const newArgs: Args = [...args];
+    let promise = Promise.resolve(newArgs[0]);
     for (let i = 0; i < this.callbacks.length; i++) {
       const callback = this.callbacks[i];
       promise = promise
-        .then((waterfall) => {
-          return callback(waterfall, ...rest);
+        .then(() => {
+          return callback(...newArgs);
         })
-        .then((result) => {
-          if (result !== undefined) waterfall = result;
+        .then((waterfall) => {
+          if (waterfall !== undefined) {
+            newArgs[0] = waterfall;
+          }
           return waterfall;
         });
     }
