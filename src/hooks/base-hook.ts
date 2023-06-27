@@ -14,7 +14,7 @@ export interface IOption {
 }
 
 export default class BaseHook<
-  Args extends unknown[] = never,
+  Args extends unknown[] = [],
   Return = void,
   Callback extends (...args: Args) => Return = (...args: Args) => Return,
 > {

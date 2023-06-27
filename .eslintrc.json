@@ -11,6 +11,9 @@
     "eslint:recommended",
     "plugin:prettier/recommended"
   ],
+  "ignorePatterns": [
+    "lib/"
+  ],
   "overrides": [
     {
       "files": ["*.ts"],

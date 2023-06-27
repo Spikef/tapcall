@@ -1,7 +1,7 @@
 import BaseHook from './base-hook';
 
 export default class SyncBailHook<
-  Args extends unknown[] = never,
+  Args extends unknown[] = [],
   Return = unknown,
 > extends BaseHook<Args, Return | void> {
   protected _call(args: Args) {

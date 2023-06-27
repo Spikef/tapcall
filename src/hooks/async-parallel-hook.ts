@@ -1,7 +1,7 @@
 import BaseHook from './base-hook';
 
 export default class AsyncParallelHook<
-  Args extends unknown[] = never,
+  Args extends unknown[] = [],
   Return = void,
 > extends BaseHook<Args, Return | Promise<Return>> {
   protected _call(args: Args) {
