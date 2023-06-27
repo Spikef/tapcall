@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A simple tapable like hook module for plugins.",
   "author": "Spikef <spikef@foxmail.com>",
+  "main": "lib/index.js",
   "keywords": [
     "hooks",
     "plugin",
@@ -13,7 +14,7 @@
     "url": "git+https://github.com/Spikef/tapcall.git"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --project tsconfig.build.json",
     "test": "NODE_ENV=development jest",
     "test:prod": "NODE_ENV=production jest",
     "coverage": "jest --coverage"
