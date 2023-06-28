@@ -145,7 +145,7 @@ describe('BaseHook', () => {
       expect(calls).toEqual(['G', 'E', 'H', 'F', 'C', 'D', 'B', 'A', 'I']);
     });
 
-    it('should ignore before which is added previously', function () {
+    it('should ignore before which is added previously', () => {
       hook.tap(
         {
           name: 'Z',
@@ -219,7 +219,7 @@ describe('BaseHook', () => {
   describe('error', () => {
     const hook = new BaseHook('hook');
 
-    it('should throw error when tap same name', () => {
+    it('should throw an error when tap a same name', () => {
       hook.clearAll();
       hook.tap('A', jest.fn());
       expect(() => hook.tap('A', jest.fn())).toThrowError(
@@ -227,7 +227,7 @@ describe('BaseHook', () => {
       );
     });
 
-    it('should throw error when tap same callback', () => {
+    it('should throw an error when tap a same callback', () => {
       const fn = jest.fn();
       hook.clearAll();
       hook.tap('A', fn);
@@ -236,7 +236,7 @@ describe('BaseHook', () => {
       );
     });
 
-    it('should throw error when callback error', () => {
+    it('should throw an error when call', () => {
       hook.clearAll();
       hook.tap('A', jest.fn());
       hook.tap('B', () => {

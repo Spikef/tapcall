@@ -21,7 +21,7 @@ export default class BaseHook<
   protected readonly options: IOption[] = [];
   protected readonly callbacks: Callback[] = [];
 
-  constructor(private readonly name: string) {}
+  constructor(protected readonly name: string) {}
 
   /**
    * 监听钩子
