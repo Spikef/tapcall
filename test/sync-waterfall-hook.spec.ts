@@ -1,39 +1,64 @@
 import { SyncWaterfallHook } from 'tapcall';
 
 describe('SyncWaterfallHook', () => {
-  it('should allow to create sync hooks', () => {
-    const hook = new SyncWaterfallHook<[arg1: string, arg2: string]>('hook');
+  describe('new', () => {
+    it('should allow to create sync waterfall hooks', () => {
+      const h1 = new SyncWaterfallHook<[a: string]>('h1');
+      const h2 = new SyncWaterfallHook<[a: string, b: number]>('h2');
+      const h3 = new SyncWaterfallHook<[a: string, b: number, c: boolean]>(
+        'h3',
+      );
 
-    const mock0 = jest.fn((arg) => arg + ',0');
-    const mock1 = jest.fn((arg) => arg + ',1');
-    const mock2 = jest.fn((arg) => arg + ',2');
-    hook.tap('A', mock0);
-    hook.tap('B', mock1);
-    hook.tap('C', mock2);
+      const mock = jest.fn();
 
-    const returnValue0 = hook.call('sync', 'a2');
-    expect(returnValue0).toBe('sync,0,1,2');
-    expect(mock0).toHaveBeenLastCalledWith('sync', 'a2');
-    expect(mock1).toHaveBeenLastCalledWith('sync,0', 'a2');
-    expect(mock2).toHaveBeenLastCalledWith('sync,0,1', 'a2');
+      h1.tap('B', mock);
+      h1.call('1');
+      expect(mock).toHaveBeenLastCalledWith('1');
+
+      h2.tap('C', mock);
+      h2.call('1', 2);
+      expect(mock).toHaveBeenLastCalledWith('1', 2);
+
+      h3.tap('D', mock);
+      h3.call('1', 2, false);
+      expect(mock).toHaveBeenLastCalledWith('1', 2, false);
+    });
   });
 
-  it('should allow to create waterfall hooks', () => {
-    const h1 = new SyncWaterfallHook<[a: number]>('h1');
-    const h2 = new SyncWaterfallHook<[a: number, b: number]>('h2');
+  describe('call', () => {
+    it('should return the args[0]', () => {
+      const hook = new SyncWaterfallHook<[a: number]>('hook');
+      expect(hook.call(1)).toBe(1);
+    });
 
-    expect(h1.call(1)).toEqual(1);
+    it('should ignore the return undefined value', () => {
+      const hook = new SyncWaterfallHook<[a: number]>('hook');
+      const fn = jest.fn(() => undefined);
+      hook.tap('A', fn);
+      expect(hook.call(1)).toBe(1);
+      expect(fn).toHaveBeenCalledTimes(1);
+    });
 
-    h1.tap('A', () => undefined);
-    h2.tap('A', (a, b) => a + b);
+    it('should return the last value', () => {
+      const hook = new SyncWaterfallHook<[a: number, b: number]>('hook');
+      hook.tap('A', (a, b) => a + b); // 1 + 10 => 11
+      hook.tap('B', (a, b) => a + b); // 11 + 10 => 21
+      hook.tap('C', (a, b) => a + b); // 21 + 10 => 31
+      expect(hook.call(1, 10)).toBe(31);
+    });
+  });
 
-    expect(h1.call(1)).toEqual(1);
-    expect(h2.call(1, 2)).toEqual(3);
-
-    let count = 1;
-    count = h1.call(count + ++count); // 1 + 2 => 3
-    count = h1.call(count + ++count); // 3 + 4 => 7
-    count = h1.call(count + ++count); // 7 + 8 => 15
-    expect(count).toEqual(15);
+  describe('error', () => {
+    it('should throw an error when call', () => {
+      const hook = new SyncWaterfallHook<[a: number]>('hook');
+      hook.tap('A', jest.fn());
+      hook.tap('B', () => {
+        throw new Error('error message');
+      });
+      hook.tap('C', jest.fn());
+      expect(() => hook.call(1)).toThrowError(
+        '[hook] call [B] error: error message',
+      );
+    });
   });
 });

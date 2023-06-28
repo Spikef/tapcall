@@ -2,19 +2,22 @@ import BaseHook from './base-hook';
 
 export default class SyncWaterfallHook<
   Args extends [unknown, ...unknown[]],
-> extends BaseHook<Args, Args[0] | undefined> {
+> extends BaseHook<Args, Args[0] | void> {
   call(...args: Args): Args[0] {
-    return super.call(...args);
-  }
-
-  protected _call(args: Args) {
-    const newArgs: Args = [...args];
-    for (let i = 0; i < this.callbacks.length; i++) {
-      const waterfall = this.callbacks[i](...newArgs);
-      if (waterfall !== undefined) {
-        newArgs[0] = waterfall;
+    let name = '';
+    try {
+      const newArgs: Args = [...args];
+      for (let i = 0; i < this.callbacks.length; i++) {
+        name = this.options[i].name;
+        const waterfall = this.callbacks[i](...newArgs);
+        if (waterfall !== undefined) {
+          newArgs[0] = waterfall;
+        }
       }
+      return newArgs[0];
+    } catch (err) {
+      const e = err as Error;
+      throw new Error(`[${this.name}] call [${name}] error: ${e.message}`);
     }
-    return newArgs[0];
   }
 }
