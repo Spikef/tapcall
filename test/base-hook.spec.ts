@@ -1,4 +1,5 @@
 import BaseHook from 'tapcall/hooks/base-hook';
+import HookError from 'tapcall/util/hook-error';
 
 describe('BaseHook', () => {
   describe('new', () => {
@@ -223,7 +224,11 @@ describe('BaseHook', () => {
       hook.clearAll();
       hook.tap('A', jest.fn());
       expect(() => hook.tap('A', jest.fn())).toThrowError(
-        '[hook] tap repeat name [A]',
+        new HookError('repeat name: A', {
+          type: 'tap',
+          hook: 'hook',
+          receiver: 'A',
+        }),
       );
     });
 
@@ -232,7 +237,11 @@ describe('BaseHook', () => {
       hook.clearAll();
       hook.tap('A', fn);
       expect(() => hook.tap('B', fn)).toThrowError(
-        '[hook] tap repeat callback [B]',
+        new HookError('repeat callback', {
+          type: 'tap',
+          hook: 'hook',
+          receiver: 'B',
+        }),
       );
     });
 
@@ -244,7 +253,11 @@ describe('BaseHook', () => {
       });
       hook.tap('C', jest.fn());
       expect(() => hook.call()).toThrowError(
-        '[hook] call [B] error: error message',
+        new HookError('error message', {
+          type: 'call',
+          hook: 'hook',
+          receiver: 'B',
+        }),
       );
     });
   });

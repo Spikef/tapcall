@@ -1,3 +1,5 @@
+import HookError, { IErrorDetail } from '../util/hook-error';
+
 export interface IOption {
   /**
    * 名称，用于区分不同的钩子执行函数
@@ -21,7 +23,7 @@ export default class BaseHook<
   protected readonly options: IOption[] = [];
   protected readonly callbacks: Callback[] = [];
 
-  constructor(protected readonly name: string) {}
+  constructor(private readonly name: string) {}
 
   /**
    * 监听钩子
@@ -32,10 +34,16 @@ export default class BaseHook<
 
     const name = option.name;
     if (this.options.some((opt) => opt.name === name)) {
-      throw new Error(`[${this.name}] tap repeat name [${name}]`);
+      throw this.createError(`repeat name: ${name}`, {
+        type: 'tap',
+        receiver: name,
+      });
     }
     if (this.callbacks.some((cb) => cb === callback)) {
-      throw new Error(`[${this.name}] tap repeat callback [${name}]`);
+      throw this.createError(`repeat callback`, {
+        type: 'tap',
+        receiver: name,
+      });
     }
 
     let before: Set<string> | undefined;
@@ -91,7 +99,11 @@ export default class BaseHook<
       }
     } catch (err) {
       const e = err as Error;
-      throw new Error(`[${this.name}] call [${name}] error: ${e.message}`);
+      throw this.createError(e.message, {
+        type: 'call',
+        receiver: name,
+        stack: e.stack,
+      });
     }
   }
 
@@ -124,5 +136,9 @@ export default class BaseHook<
   clearAll() {
     this.options.splice(0, this.options.length);
     this.callbacks.splice(0, this.callbacks.length);
+  }
+
+  protected createError(message: string, detail: IErrorDetail) {
+    return new HookError(message, { ...detail, hook: this.name });
   }
 }
