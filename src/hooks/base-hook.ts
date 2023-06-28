@@ -91,19 +91,19 @@ export default class BaseHook<
    * 触发钩子
    */
   call(...args: Args): void {
-    let name = '';
-    try {
-      for (let i = 0; i < this.callbacks.length; i++) {
-        name = this.options[i].name;
-        this.callbacks[i](...args);
+    for (let i = 0; i < this.callbacks.length; i++) {
+      const name = this.options[i].name;
+      const callback = this.callbacks[i];
+      try {
+        callback(...args);
+      } catch (err) {
+        const e = err as Error;
+        throw this.createError(e.message, {
+          type: 'call',
+          receiver: name,
+          stack: e.stack,
+        });
       }
-    } catch (err) {
-      const e = err as Error;
-      throw this.createError(e.message, {
-        type: 'call',
-        receiver: name,
-        stack: e.stack,
-      });
     }
   }
 
