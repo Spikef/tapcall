@@ -28,59 +28,28 @@ export default class BaseHook<
    */
   tap(option: string | IOption, callback: Callback) {
     if (typeof option === 'string') option = { name: option };
-    if (typeof option !== 'object' || typeof callback !== 'function') return;
+    if (typeof callback !== 'function') return;
 
-    try {
-      this._tap(option, callback);
-    } catch (e) {
-      const err = e as Error;
-      throw new Error(`[hook: ${this.name}.tap] ${err.message}`);
+    const name = option.name;
+    if (this.options.some((opt) => opt.name === name)) {
+      throw new Error(`[${this.name}] tap repeat name [${name}]`);
     }
-  }
-
-  /**
-   * 触发钩子
-   */
-  call(...args: Args) {
-    try {
-      return this._call(args);
-    } catch (e) {
-      const err = e as Error;
-      throw new Error(`[hook: ${this.name}.call] ${err.message}`);
-    }
-  }
-
-  /**
-   * 清除tap
-   */
-  clear(callbacks: Callback | Callback[]) {
-    if (!Array.isArray(callbacks)) callbacks = [callbacks];
-    return this._clear(callbacks);
-  }
-
-  /**
-   * 清除所有tap
-   */
-  clearAll() {
-    return this._clear(this.callbacks.slice());
-  }
-
-  /**
-   * 监听钩子
-   */
-  protected _tap(option: IOption, callback: Callback) {
-    if (~this.callbacks.indexOf(callback)) {
-      throw new Error(`[hook] ${this.name}: repeat callback`);
-    }
-    if (this.options.some((opt) => opt.name === option.name)) {
-      throw new Error(`[hook] ${this.name}: repeat name [${option.name}]`);
+    if (this.callbacks.some((cb) => cb === callback)) {
+      throw new Error(`[${this.name}] tap repeat callback [${name}]`);
     }
 
-    let before;
-    if (typeof option.before === 'string') {
-      before = new Set([option.before]);
-    } else if (Array.isArray(option.before)) {
-      before = new Set(option.before);
+    let before: Set<string> | undefined;
+    if (option.before === '*') {
+      before = new Set(this.options.map((opt) => opt.name));
+    } else if (option.before) {
+      before = new Set(
+        Array.isArray(option.before) ? option.before : [option.before],
+      );
+      for (const name of before.values()) {
+        if (this.options.every((opt) => opt.name !== name)) {
+          before.delete(name);
+        }
+      }
     }
 
     const stage = option.stage || 0;
@@ -113,22 +82,48 @@ export default class BaseHook<
   /**
    * 触发钩子
    */
-  protected _call(args: Args) {
-    this.callbacks.forEach((cb) => cb(...args));
+  call(...args: Args) {
+    let index = 0;
+    try {
+      this.callbacks.forEach((cb, i) => {
+        index = i;
+        cb(...args);
+      });
+    } catch (err) {
+      const e = err as Error;
+      const name = this.options[index].name;
+      throw new Error(`[${this.name}] call [${name}] error: ${e.message}`);
+    }
   }
 
   /**
-   * 清除监听
+   * 清除指定监听
    */
-  protected _clear(callbacks: Callback[]) {
+  clear(callbacks: string | Callback | Array<string | Callback>) {
+    if (!Array.isArray(callbacks)) {
+      callbacks = [callbacks];
+    }
     callbacks.forEach((callback) => {
-      if (!callback || typeof callback !== 'function') return;
+      if (!callback) return;
 
-      const index = this.callbacks.indexOf(callback);
+      let index: number;
+      if (typeof callback === 'function') {
+        index = this.callbacks.indexOf(callback);
+      } else {
+        index = this.options.findIndex((opt) => opt.name === callback);
+      }
       if (~index) {
         this.options.splice(index, 1);
         this.callbacks.splice(index, 1);
       }
     });
+  }
+
+  /**
+   * 清除所有监听
+   */
+  clearAll() {
+    this.options.splice(0, this.options.length);
+    this.callbacks.splice(0, this.callbacks.length);
   }
 }
