@@ -1,4 +1,5 @@
 import { SyncBailHook } from 'tapcall';
+import HookError from 'tapcall/util/hook-error';
 
 describe('SyncBailHook', () => {
   describe('new', () => {
@@ -56,7 +57,11 @@ describe('SyncBailHook', () => {
       });
       hook.tap('C', jest.fn());
       expect(() => hook.call()).toThrowError(
-        '[hook] call [B] error: error message',
+        new HookError('error message', {
+          type: 'call',
+          hook: 'hook',
+          receiver: 'B',
+        }),
       );
     });
   });

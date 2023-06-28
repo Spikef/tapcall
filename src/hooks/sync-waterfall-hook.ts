@@ -17,7 +17,11 @@ export default class SyncWaterfallHook<
       return newArgs[0];
     } catch (err) {
       const e = err as Error;
-      throw new Error(`[${this.name}] call [${name}] error: ${e.message}`);
+      throw this.createError(e.message, {
+        type: 'call',
+        receiver: name,
+        stack: e.stack,
+      });
     }
   }
 }
