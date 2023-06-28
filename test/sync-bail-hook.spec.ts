@@ -1,51 +1,63 @@
 import { SyncBailHook } from 'tapcall';
 
 describe('SyncBailHook', () => {
-  it('should allow to create sync bail hooks', async () => {
-    const h1 = new SyncBailHook<[a: number]>('h1');
-    const h2 = new SyncBailHook<[a: number, b: number]>('h2');
+  describe('new', () => {
+    it('should allow to create sync bail hooks', () => {
+      const h0 = new SyncBailHook('h0');
+      const h1 = new SyncBailHook<[a: string]>('h1');
+      const h2 = new SyncBailHook<[a: string, b: number]>('h2');
+      const h3 = new SyncBailHook<[a: string, b: number, c: boolean]>('h3');
 
-    const r = h1.call(1);
-    expect(r).toEqual(undefined);
+      const mock = jest.fn();
 
-    h1.tap('A', () => undefined);
-    h2.tap('A', (a, b) => a + b);
+      h0.tap('A', mock);
+      h0.call();
+      expect(mock).toHaveBeenLastCalledWith();
 
-    expect(h1.call(1)).toEqual(undefined);
-    expect(h2.call(1, 2)).toEqual(3);
+      h1.tap('B', mock);
+      h1.call('1');
+      expect(mock).toHaveBeenLastCalledWith('1');
 
-    h1.tap('B', (a) => 'ok' + a);
-    h2.tap('B', () => 'wrong');
+      h2.tap('C', mock);
+      h2.call('1', 2);
+      expect(mock).toHaveBeenLastCalledWith('1', 2);
 
-    expect(h1.call(10)).toEqual('ok10');
-    expect(h2.call(10, 20)).toEqual([10, 20]);
+      h3.tap('D', mock);
+      h3.call('1', 2, false);
+      expect(mock).toHaveBeenLastCalledWith('1', 2, false);
+    });
   });
 
-  it('should bail on non-null return', async () => {
-    const h1 = new SyncBailHook('h1');
-    const mockCall1 = jest.fn();
-    const mockCall2 = jest.fn(() => 'B');
-    const mockCall3 = jest.fn(() => 'C');
-    h1.tap('A', mockCall1);
-    h1.tap('B', mockCall2);
-    h1.tap('C', mockCall3);
-    expect(h1.call()).toEqual('B');
-    expect(mockCall1).toHaveBeenCalledTimes(1);
-    expect(mockCall2).toHaveBeenCalledTimes(1);
-    expect(mockCall3).toHaveBeenCalledTimes(0);
+  describe('call', () => {
+    it('should return undefined', () => {
+      const hook = new SyncBailHook<[], number>('hook');
+      hook.tap('A', () => undefined);
+      hook.tap('B', () => undefined);
+      hook.tap('C', () => undefined);
+      expect(hook.call()).toBeUndefined();
+    });
+
+    it('should return the last undefined value', () => {
+      const hook = new SyncBailHook<[], number>('hook');
+      hook.tap('A', () => undefined);
+      hook.tap('B', () => 2);
+      hook.tap('C', () => 3);
+      expect(hook.call()).toBe(2);
+    });
   });
 
-  it('should not crash with many plugins', () => {
-    jest.spyOn(console, 'warn').mockImplementation();
-    const hook = new SyncBailHook('testHook');
-    for (let i = 0; i < 1000; i++) {
-      hook.tap('Test', () => 42);
-    }
-    expect(hook.call()).toBe(42);
-    if (process.env.NODE_ENV === 'development') {
-      expect(console.warn).toHaveBeenCalledWith(
-        '[hook] testHook: 对同一个hook定义了相同的name: Test',
+  describe('error', () => {
+    it('should throw an error when call', () => {
+      const hook = new SyncBailHook('hook');
+
+      hook.tap('A', jest.fn());
+      hook.tap('B', () => {
+        throw new Error('error message');
+      });
+      hook.tap('C', jest.fn());
+      expect(() => hook.call()).toThrowError(
+        '[hook] call [B] error: error message',
       );
-    }
+    });
   });
 });

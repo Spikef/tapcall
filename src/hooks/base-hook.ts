@@ -82,16 +82,15 @@ export default class BaseHook<
   /**
    * 触发钩子
    */
-  call(...args: Args) {
-    let index = 0;
+  call(...args: Args): void {
+    let name = '';
     try {
-      this.callbacks.forEach((cb, i) => {
-        index = i;
-        cb(...args);
-      });
+      for (let i = 0; i < this.callbacks.length; i++) {
+        name = this.options[i].name;
+        this.callbacks[i](...args);
+      }
     } catch (err) {
       const e = err as Error;
-      const name = this.options[index].name;
       throw new Error(`[${this.name}] call [${name}] error: ${e.message}`);
     }
   }

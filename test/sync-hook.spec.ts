@@ -30,7 +30,7 @@ describe('SyncHook', () => {
 
   describe('call', () => {
     it('should return an array of number values', () => {
-      const hook = new SyncHook<[], number>('h0');
+      const hook = new SyncHook<[], number>('hook');
       hook.tap('A', () => 1);
       hook.tap('B', () => 2);
       hook.tap('C', () => 3);
@@ -38,7 +38,7 @@ describe('SyncHook', () => {
     });
 
     it('should return an array of string values', () => {
-      const hook = new SyncHook<[val: string], string>('h1');
+      const hook = new SyncHook<[val: string], string>('hook');
       hook.tap('A', (val) => val + '1');
       hook.tap('B', (val) => val + '2');
       hook.tap('C', (val) => val + '3');

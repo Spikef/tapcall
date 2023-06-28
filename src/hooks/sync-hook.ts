@@ -5,15 +5,16 @@ export default class SyncHook<
   Return = void,
 > extends BaseHook<Args, Return> {
   call(...args: Args): Return[] {
-    let index = 0;
+    let name = '';
     try {
-      return this.callbacks.map((cb, i) => {
-        index = i;
-        return cb(...args);
-      });
+      const result = [];
+      for (let i = 0; i < this.callbacks.length; i++) {
+        name = this.options[i].name;
+        result.push(this.callbacks[i](...args));
+      }
+      return result;
     } catch (err) {
       const e = err as Error;
-      const name = this.options[index].name;
       throw new Error(`[${this.name}] call [${name}] error: ${e.message}`);
     }
   }
