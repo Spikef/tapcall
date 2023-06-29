@@ -30,13 +30,23 @@ describe('BaseHook', () => {
   });
 
   describe('call', () => {
-    it('should return undefined when call', () => {
-      const h0 = new BaseHook('h0');
-      h0.tap('A', () => 1);
-      h0.tap('B', () => 2);
-      h0.tap('C', () => 3);
+    it('should return undefined when no hooks', () => {
+      const hook = new BaseHook('hook');
+      expect(hook.call()).toBeUndefined();
+    });
 
-      expect(h0.call()).toBeUndefined();
+    it('should return undefined when any hooks', () => {
+      const hook = new BaseHook('hook');
+      const mock1 = jest.fn(() => 1);
+      const mock2 = jest.fn(() => 2);
+      const mock3 = jest.fn(() => 3);
+      hook.tap('A', mock1);
+      hook.tap('B', mock2);
+      hook.tap('C', mock3);
+      expect(hook.call()).toBeUndefined();
+      expect(mock1).toHaveBeenCalledTimes(1);
+      expect(mock2).toHaveBeenCalledTimes(1);
+      expect(mock3).toHaveBeenCalledTimes(1);
     });
   });
 

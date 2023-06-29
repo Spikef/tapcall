@@ -30,20 +30,23 @@ describe('SyncHook', () => {
   });
 
   describe('call', () => {
-    it('should return an array of number values', () => {
+    it('should return undefined when no hooks', () => {
       const hook = new SyncHook<[], number>('hook');
-      hook.tap('A', () => 1);
-      hook.tap('B', () => 2);
-      hook.tap('C', () => 3);
-      expect(hook.call()).toEqual([1, 2, 3]);
+      expect(hook.call()).toBeUndefined();
     });
 
-    it('should return an array of string values', () => {
-      const hook = new SyncHook<[val: string], string>('hook');
-      hook.tap('A', (val) => val + '1');
-      hook.tap('B', (val) => val + '2');
-      hook.tap('C', (val) => val + '3');
-      expect(hook.call('a')).toEqual(['a1', 'a2', 'a3']);
+    it('should return undefined when any hooks', () => {
+      const hook = new SyncHook<[], number>('hook');
+      const mock1 = jest.fn(() => 1);
+      const mock2 = jest.fn(() => 2);
+      const mock3 = jest.fn(() => 3);
+      hook.tap('A', mock1);
+      hook.tap('B', mock2);
+      hook.tap('C', mock3);
+      expect(hook.call()).toBeUndefined();
+      expect(mock1).toHaveBeenCalledTimes(1);
+      expect(mock2).toHaveBeenCalledTimes(1);
+      expect(mock3).toHaveBeenCalledTimes(1);
     });
   });
 
