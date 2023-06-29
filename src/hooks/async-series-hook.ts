@@ -1,15 +1,18 @@
-import BaseHook from './base-hook';
+import AsyncHook from './async-hook';
 
 export default class AsyncSeriesHook<
   Args extends unknown[] = [],
   Return = void,
-> extends BaseHook<Args, Return | void | Promise<Return | void>> {
-  protected _call(args: Args) {
-    let promise: Promise<Return | void> = Promise.resolve();
+> extends AsyncHook<Args, Return | void | Promise<Return | void>> {
+  call(...args: Args): Promise<Return | void> {
+    let promise: Promise<Return | void> | undefined;
     for (let i = 0; i < this.callbacks.length; i++) {
+      const name = this.options[i].name;
       const callback = this.callbacks[i];
-      promise = promise.then(() => callback(...args));
+      promise = promise
+        ? promise.then(() => this.createPromise(name, args, callback))
+        : this.createPromise(name, args, callback);
     }
-    return promise;
+    return promise || Promise.resolve();
   }
 }

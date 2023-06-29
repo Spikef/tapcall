@@ -1,6 +1,6 @@
-import BaseHook from './base-hook';
+import Hook from './hook';
 
 export default class SyncHook<
   Args extends unknown[] = [],
   Return = void,
-> extends BaseHook<Args, Return> {}
+> extends Hook<Args, Return> {}

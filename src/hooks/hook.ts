@@ -2,20 +2,23 @@ import HookError, { IErrorDetail } from '../util/hook-error';
 
 export interface IOption {
   /**
-   * 名称，用于区分不同的钩子执行函数
+   * unique name, used to identify the plugin
    */
   name: string;
   /**
-   * 执行顺序，默认为0
+   * the stage of the plugin, the smaller the number, the higher the priority, the default is 0
    */
   stage?: number;
   /**
-   * 前置依赖
+   * the plugin to be inserted before
    */
   before?: string | string[];
 }
 
-export default class BaseHook<
+/**
+ * @internal
+ */
+export default class Hook<
   Args extends unknown[] = [],
   Return = void,
   Callback extends (...args: Args) => Return = (...args: Args) => Return,
@@ -25,9 +28,6 @@ export default class BaseHook<
 
   constructor(private readonly name: string) {}
 
-  /**
-   * 监听钩子
-   */
   tap(option: string | IOption, callback: Callback) {
     if (typeof option === 'string') option = { name: option };
     if (typeof callback !== 'function') return;
@@ -87,9 +87,6 @@ export default class BaseHook<
     this.callbacks[i] = callback;
   }
 
-  /**
-   * 触发钩子
-   */
   call(...args: Args): void {
     for (let i = 0; i < this.callbacks.length; i++) {
       const name = this.options[i].name;
@@ -107,9 +104,6 @@ export default class BaseHook<
     }
   }
 
-  /**
-   * 清除指定监听
-   */
   clear(callbacks: string | Callback | Array<string | Callback>) {
     if (!Array.isArray(callbacks)) {
       callbacks = [callbacks];
@@ -130,9 +124,6 @@ export default class BaseHook<
     });
   }
 
-  /**
-   * 清除所有监听
-   */
   clearAll() {
     this.options.splice(0, this.options.length);
     this.callbacks.splice(0, this.callbacks.length);
@@ -140,36 +131,5 @@ export default class BaseHook<
 
   protected createError(message: string, detail: IErrorDetail) {
     return new HookError(message, { ...detail, hook: this.name });
-  }
-
-  protected createPromise<Return>(
-    name: string,
-    args: Args,
-    callback: (...args: Args) => Return | Promise<Return>,
-  ) {
-    return new Promise<Return>((resolve, reject) => {
-      try {
-        resolve(callback(...args));
-      } catch (e) {
-        reject(e);
-      }
-    }).catch((err) => {
-      if (err instanceof Error) {
-        return Promise.reject(
-          this.createError(err.message, {
-            type: 'call',
-            receiver: name,
-            stack: err.stack,
-          }),
-        );
-      } else {
-        return Promise.reject(
-          this.createError(String(err), {
-            type: 'call',
-            receiver: name,
-          }),
-        );
-      }
-    });
   }
 }

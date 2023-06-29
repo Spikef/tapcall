@@ -1,13 +1,13 @@
-import BaseHook from 'tapcall/hooks/base-hook';
+import Hook from 'tapcall/hooks/hook';
 import HookError from 'tapcall/util/hook-error';
 
 describe('BaseHook', () => {
   describe('new', () => {
     it('should allow to create base hooks', () => {
-      const h0 = new BaseHook('h0');
-      const h1 = new BaseHook<[a: string]>('h1');
-      const h2 = new BaseHook<[a: string, b: number]>('h2');
-      const h3 = new BaseHook<[a: string, b: number, c: boolean]>('h3');
+      const h0 = new Hook('h0');
+      const h1 = new Hook<[a: string]>('h1');
+      const h2 = new Hook<[a: string, b: number]>('h2');
+      const h3 = new Hook<[a: string, b: number, c: boolean]>('h3');
 
       const mock = jest.fn();
 
@@ -31,12 +31,12 @@ describe('BaseHook', () => {
 
   describe('call', () => {
     it('should return undefined when no hooks', () => {
-      const hook = new BaseHook('hook');
+      const hook = new Hook('hook');
       expect(hook.call()).toBeUndefined();
     });
 
     it('should return undefined when any hooks', () => {
-      const hook = new BaseHook('hook');
+      const hook = new Hook('hook');
       const mock1 = jest.fn(() => 1);
       const mock2 = jest.fn(() => 2);
       const mock3 = jest.fn(() => 3);
@@ -51,7 +51,7 @@ describe('BaseHook', () => {
   });
 
   describe('tap', () => {
-    const hook = new BaseHook('hook');
+    const hook = new Hook('hook');
     const calls: string[] = [];
 
     hook.tap('A', () => calls.push('A'));
@@ -171,7 +171,7 @@ describe('BaseHook', () => {
   });
 
   describe('clear', () => {
-    const hook = new BaseHook('hook');
+    const hook = new Hook('hook');
     const calls: string[] = [];
 
     const fnA = () => calls.push('A');
@@ -228,7 +228,7 @@ describe('BaseHook', () => {
   });
 
   describe('error', () => {
-    const hook = new BaseHook('hook');
+    const hook = new Hook('hook');
 
     it('should throw an error when tap a same name', () => {
       hook.clearAll();

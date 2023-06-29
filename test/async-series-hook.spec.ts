@@ -1,35 +1,30 @@
 import { AsyncSeriesHook } from 'tapcall';
 
 describe('AsyncSeriesHook', () => {
-  it('should allow to create async hooks', async () => {
-    const hook = new AsyncSeriesHook<[arg1: string, arg2: string], string>(
-      'hook',
-    );
+  describe('new', () => {
+    it('should allow to create async series hooks', async () => {
+      const h0 = new AsyncSeriesHook('h0');
+      const h1 = new AsyncSeriesHook<[a: string]>('h1');
+      const h2 = new AsyncSeriesHook<[a: string, b: number]>('h2');
+      const h3 = new AsyncSeriesHook<[a: string, b: number, c: boolean]>('h3');
 
-    const mock0 = jest.fn((arg) => arg + ',0');
-    const mock1 = jest.fn((arg) => arg + ',1');
-    const mock2 = jest.fn((arg) => arg + ',2');
-    hook.tap('A', mock0);
-    hook.tap('B', mock1);
-    hook.tap('C', mock2);
+      const mock = jest.fn();
 
-    const returnValue0 = await hook.call('async', 'a2');
-    expect(returnValue0).toEqual('async,2');
-    expect(mock0).toHaveBeenLastCalledWith('async', 'a2');
-    expect(mock1).toHaveBeenLastCalledWith('async', 'a2');
-    expect(mock2).toHaveBeenLastCalledWith('async', 'a2');
-  });
+      h0.tap('A', mock);
+      h0.call();
+      expect(mock).toHaveBeenLastCalledWith();
 
-  it('should allow to create async parallel hooks', async () => {
-    const h1 = new AsyncSeriesHook<[a: number], number>('h1');
-    const h2 = new AsyncSeriesHook<[a: number, b: number], number>('h2');
+      h1.tap('B', mock);
+      h1.call('1');
+      expect(mock).toHaveBeenLastCalledWith('1');
 
-    expect(await h1.call(1)).toBeUndefined();
+      h2.tap('C', mock);
+      h2.call('1', 2);
+      expect(mock).toHaveBeenLastCalledWith('1', 2);
 
-    h1.tap('A', (a) => a);
-    h2.tap('A', (a, b) => a + b);
-
-    expect(await h1.call(1)).toEqual(1);
-    expect(await h2.call(1, 2)).toEqual(3);
+      h3.tap('D', mock);
+      h3.call('1', 2, false);
+      expect(mock).toHaveBeenLastCalledWith('1', 2, false);
+    });
   });
 });

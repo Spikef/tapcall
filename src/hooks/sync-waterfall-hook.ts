@@ -1,8 +1,8 @@
-import BaseHook from './base-hook';
+import Hook from './hook';
 
 export default class SyncWaterfallHook<
   Args extends [unknown, ...unknown[]],
-> extends BaseHook<Args, Args[0] | void> {
+> extends Hook<Args, Args[0] | void> {
   call(...args: Args): Args[0] {
     const newArgs: Args = [...args];
     for (let i = 0; i < this.callbacks.length; i++) {

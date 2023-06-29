@@ -2,7 +2,7 @@ import { AsyncParallelHook } from 'tapcall';
 
 describe('AsyncParallelHook', () => {
   describe('new', () => {
-    it('should create a new async parallel hook', () => {
+    it('should allow to create async parallel hooks', async () => {
       const h0 = new AsyncParallelHook('h0');
       const h1 = new AsyncParallelHook<[a: string]>('h1');
       const h2 = new AsyncParallelHook<[a: string, b: number]>('h2');

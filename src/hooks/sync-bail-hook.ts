@@ -1,9 +1,9 @@
-import BaseHook from './base-hook';
+import Hook from './hook';
 
 export default class SyncBailHook<
   Args extends unknown[] = [],
   Return = void,
-> extends BaseHook<Args, Return | void> {
+> extends Hook<Args, Return | void> {
   call(...args: Args): Return | void {
     for (let i = 0; i < this.callbacks.length; i++) {
       const name = this.options[i].name;

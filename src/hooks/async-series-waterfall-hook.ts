@@ -1,24 +1,24 @@
-import BaseHook from './base-hook';
+import AsyncHook from './async-hook';
 
 export default class AsyncSeriesWaterfallHook<
   Args extends [unknown, ...unknown[]],
-> extends BaseHook<Args, Args[0] | void | Promise<Args[0] | void>> {
-  call(...args: Args): Promise<Args[0]> {
+> extends AsyncHook<Args, Args[0] | void | Promise<Args[0] | void>> {
+  call(...args: Args): Promise<Args[0] | void> {
     const newArgs: Args = [...args];
-    let promise = Promise.resolve(newArgs[0]);
+    let promise: Promise<Args[0] | void> | undefined;
     for (let i = 0; i < this.callbacks.length; i++) {
+      const name = this.options[i].name;
       const callback = this.callbacks[i];
       promise = promise
-        .then(() => {
-          return callback(...newArgs);
-        })
-        .then((waterfall) => {
-          if (waterfall !== undefined) {
-            newArgs[0] = waterfall;
-          }
-          return waterfall;
-        });
+        ? promise.then(() => this.createPromise(name, newArgs, callback))
+        : this.createPromise(name, newArgs, callback);
+      promise.then((waterfall) => {
+        if (waterfall !== undefined) {
+          newArgs[0] = waterfall;
+        }
+        return waterfall;
+      });
     }
-    return promise;
+    return promise || Promise.resolve(newArgs[0]);
   }
 }
