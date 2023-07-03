@@ -1,14 +1,28 @@
 import HookError from 'tapcall/util/hook-error';
 
-type HookConstructor = {
-  new <Args extends unknown[]>(name: string): HookInstance<Args>;
-};
-type WaterfallHookConstructor = {
-  new <Args extends [unknown, ...unknown[]]>(name: string): HookInstance<Args>;
-};
 type HookInstance<Args extends unknown[] = []> = {
   tap(option: string, callback: (...args: Args) => unknown): void;
   call(...args: Args): void;
+  clearAll(): void;
+};
+type AsyncHookInstance<Args extends unknown[] = []> = Pick<
+  HookInstance,
+  'tap' | 'clearAll'
+> & {
+  call(...args: Args): Promise<unknown>;
+};
+type HookConstructor = {
+  new <Args extends unknown[] = []>(name: string): HookInstance<Args>;
+};
+type WaterfallHookConstructor = {
+  new <Args extends [unknown, ...unknown[]] = [unknown]>(
+    name: string,
+  ): HookInstance<Args>;
+};
+type AsyncWaterfallHookConstructor = {
+  new <Args extends [unknown, ...unknown[]] = [unknown]>(
+    name: string,
+  ): AsyncHookInstance<Args>;
 };
 
 export const testCreateNewHookNoArgs = (Hook: HookConstructor) => {
@@ -61,5 +75,52 @@ export const testSyncHookError = (Hook: WaterfallHookConstructor) => {
     );
     expect(mock1).toBeCalledTimes(1);
     expect(mock2).toBeCalledTimes(0);
+  });
+};
+
+export const testAsyncHookError = (Hook: AsyncWaterfallHookConstructor) => {
+  const hook = new Hook('hook');
+
+  beforeEach(() => {
+    hook.clearAll();
+  });
+
+  const should = (done: jest.DoneCallback) => {
+    hook
+      .call(1)
+      .catch((e) => {
+        expect(e.type).toBe('call');
+        expect(e.hook).toBe('hook');
+        expect(e.receiver).toBe('B');
+        expect(e.message).toBe('error message');
+      })
+      .then(done);
+  };
+
+  it('should reject with error when reject string', (done) => {
+    hook.tap('A', jest.fn());
+    hook.tap('B', () => {
+      return Promise.reject('error message');
+    });
+    hook.tap('C', jest.fn());
+    should(done);
+  });
+
+  it('should reject with error when reject error', (done) => {
+    hook.tap('A', jest.fn());
+    hook.tap('B', () => {
+      return Promise.reject(new Error('error message'));
+    });
+    hook.tap('C', jest.fn());
+    should(done);
+  });
+
+  it('should reject with error when throw error', (done) => {
+    hook.tap('A', jest.fn());
+    hook.tap('B', () => {
+      throw new Error('error message');
+    });
+    hook.tap('C', jest.fn());
+    should(done);
   });
 };

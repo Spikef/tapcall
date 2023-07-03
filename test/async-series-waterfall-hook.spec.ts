@@ -1,8 +1,12 @@
 import { AsyncSeriesWaterfallHook } from 'tapcall';
-import { testCreateNewHookWithArgs } from './common';
+import { testAsyncHookError, testCreateNewHookWithArgs } from './common';
 
 describe('AsyncSeriesWaterfallHook', () => {
   describe('new', () => {
     testCreateNewHookWithArgs(AsyncSeriesWaterfallHook);
+  });
+
+  describe('error', () => {
+    testAsyncHookError(AsyncSeriesWaterfallHook);
   });
 });

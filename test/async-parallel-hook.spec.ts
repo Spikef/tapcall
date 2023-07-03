@@ -1,5 +1,9 @@
 import { AsyncParallelHook } from 'tapcall';
-import { testCreateNewHookNoArgs, testCreateNewHookWithArgs } from './common';
+import {
+  testAsyncHookError,
+  testCreateNewHookNoArgs,
+  testCreateNewHookWithArgs,
+} from './common';
 
 describe('AsyncParallelHook', () => {
   describe('new', () => {
@@ -57,61 +61,6 @@ describe('AsyncParallelHook', () => {
   });
 
   describe('error', () => {
-    it('should reject with error when reject string', (done) => {
-      const hook = new AsyncParallelHook('hook');
-
-      hook.tap('A', jest.fn());
-      hook.tap('B', () => {
-        return Promise.reject('error message');
-      });
-      hook.tap('C', jest.fn());
-      hook
-        .call()
-        .catch((e) => {
-          expect(e.type).toBe('call');
-          expect(e.hook).toBe('hook');
-          expect(e.receiver).toBe('B');
-          expect(e.message).toBe('error message');
-        })
-        .then(done);
-    });
-
-    it('should reject with error when reject error', (done) => {
-      const hook = new AsyncParallelHook('hook');
-
-      hook.tap('A', jest.fn());
-      hook.tap('B', () => {
-        return Promise.reject(new Error('error message'));
-      });
-      hook.tap('C', jest.fn());
-      hook
-        .call()
-        .catch((e) => {
-          expect(e.type).toBe('call');
-          expect(e.hook).toBe('hook');
-          expect(e.receiver).toBe('B');
-          expect(e.message).toBe('error message');
-        })
-        .then(done);
-    });
-
-    it('should reject with error when throw error', (done) => {
-      const hook = new AsyncParallelHook('hook');
-
-      hook.tap('A', jest.fn());
-      hook.tap('B', () => {
-        throw new Error('error message');
-      });
-      hook.tap('C', jest.fn());
-      hook
-        .call()
-        .catch((e) => {
-          expect(e.type).toBe('call');
-          expect(e.hook).toBe('hook');
-          expect(e.receiver).toBe('B');
-          expect(e.message).toBe('error message');
-        })
-        .then(done);
-    });
+    testAsyncHookError(AsyncParallelHook);
   });
 });
