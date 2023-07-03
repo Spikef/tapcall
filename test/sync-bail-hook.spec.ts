@@ -13,7 +13,7 @@ describe('SyncBailHook', () => {
 
   describe('call', () => {
     it('should return undefined when no hooks', () => {
-      const hook = new SyncBailHook<[], number>('hook');
+      const hook = new SyncBailHook('hook');
       expect(hook.call()).toBeUndefined();
     });
 
