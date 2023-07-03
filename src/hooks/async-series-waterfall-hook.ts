@@ -9,14 +9,12 @@ export default class AsyncSeriesWaterfallHook<
     for (let i = 0; i < this.callbacks.length; i++) {
       const name = this.options[i].name;
       const callback = this.callbacks[i];
-      promise = promise
-        ? promise.then(() => this.createPromise(name, newArgs, callback))
-        : this.createPromise(name, newArgs, callback);
-      promise.then((waterfall) => {
-        if (waterfall !== undefined) {
-          newArgs[0] = waterfall;
-        }
-        return waterfall;
+      promise = (
+        promise
+          ? promise.then(() => this.createPromise(name, newArgs, callback))
+          : this.createPromise(name, newArgs, callback)
+      ).then((waterfall) => {
+        if (waterfall !== undefined) newArgs[0] = waterfall;
       });
     }
     return promise || Promise.resolve(newArgs[0]);

@@ -88,7 +88,7 @@ export const testAsyncHookError = (Hook: AsyncWaterfallHookConstructor) => {
   const should = (done: jest.DoneCallback) => {
     hook
       .call(1)
-      .catch((e) => {
+      .catch((e: HookError) => {
         expect(e.type).toBe('call');
         expect(e.hook).toBe('hook');
         expect(e.receiver).toBe('B');
