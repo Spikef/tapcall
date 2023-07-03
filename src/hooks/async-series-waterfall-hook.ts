@@ -1,4 +1,4 @@
-import AsyncHook from './async-hook';
+import AsyncHook from './base/async-hook';
 
 export default class AsyncSeriesWaterfallHook<
   Args extends [unknown, ...unknown[]],

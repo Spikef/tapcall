@@ -1,4 +1,4 @@
-import HookError, { IErrorDetail } from '../util/hook-error';
+import HookError, { IErrorDetail } from '../../util/hook-error';
 
 export interface IOption {
   /**

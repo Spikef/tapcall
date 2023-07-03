@@ -1,4 +1,4 @@
-import AsyncHook from './async-hook';
+import AsyncHook from './base/async-hook';
 
 export default class AsyncSeriesHook<
   Args extends unknown[] = [],

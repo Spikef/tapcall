@@ -1,4 +1,4 @@
-import Hook from './hook';
+import Hook from './base/hook';
 
 export default class SyncWaterfallHook<
   Args extends [unknown, ...unknown[]],

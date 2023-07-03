@@ -1,4 +1,4 @@
-import Hook from 'tapcall/hooks/hook';
+import Hook from 'tapcall/hooks/base/hook';
 import HookError from 'tapcall/util/hook-error';
 import {
   testCreateNewHookNoArgs,
