@@ -1,43 +1,27 @@
 import { SyncWaterfallHook } from 'tapcall';
 import HookError from 'tapcall/util/hook-error';
+import { testCreateNewHookWithArgs } from './common';
 
 describe('SyncWaterfallHook', () => {
   describe('new', () => {
-    it('should allow to create sync waterfall hooks', () => {
-      const h1 = new SyncWaterfallHook<[a: string]>('h1');
-      const h2 = new SyncWaterfallHook<[a: string, b: number]>('h2');
-      const h3 = new SyncWaterfallHook<[a: string, b: number, c: boolean]>(
-        'h3',
-      );
-
-      const mock = jest.fn();
-
-      h1.tap('B', mock);
-      h1.call('1');
-      expect(mock).toHaveBeenLastCalledWith('1');
-
-      h2.tap('C', mock);
-      h2.call('1', 2);
-      expect(mock).toHaveBeenLastCalledWith('1', 2);
-
-      h3.tap('D', mock);
-      h3.call('1', 2, false);
-      expect(mock).toHaveBeenLastCalledWith('1', 2, false);
-    });
+    testCreateNewHookWithArgs(SyncWaterfallHook);
   });
 
   describe('call', () => {
-    it('should return the args[0]', () => {
+    it('should return the args[0] when no hooks', () => {
       const hook = new SyncWaterfallHook<[a: number]>('hook');
       expect(hook.call(1)).toBe(1);
     });
 
     it('should ignore the return undefined value', () => {
       const hook = new SyncWaterfallHook<[a: number]>('hook');
-      const fn = jest.fn(() => undefined);
-      hook.tap('A', fn);
+      const mock1 = jest.fn(() => undefined);
+      const mock2 = jest.fn((a: number) => a + 2);
+      hook.tap('A', mock1);
       expect(hook.call(1)).toBe(1);
-      expect(fn).toHaveBeenCalledTimes(1);
+      expect(mock1).toHaveBeenCalledTimes(1);
+      hook.tap('B', mock2);
+      expect(hook.call(1)).toBe(3);
     });
 
     it('should return the last value', () => {
