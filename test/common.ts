@@ -1,3 +1,5 @@
+import HookError from 'tapcall/util/hook-error';
+
 type HookConstructor = {
   new <Args extends unknown[]>(name: string): HookInstance<Args>;
 };
@@ -37,5 +39,27 @@ export const testCreateNewHookWithArgs = (Hook: WaterfallHookConstructor) => {
     h3.tap('C', mock);
     h3.call('1', 2, false);
     expect(mock).toHaveBeenLastCalledWith('1', 2, false);
+  });
+};
+
+export const testSyncHookError = (Hook: WaterfallHookConstructor) => {
+  it('should throw an error when callback throws error', () => {
+    const mock1 = jest.fn();
+    const mock2 = jest.fn();
+    const hook = new Hook('hook');
+    hook.tap('A', mock1);
+    hook.tap('B', () => {
+      throw new Error('error message');
+    });
+    hook.tap('C', mock2);
+    expect(() => hook.call(1)).toThrowError(
+      new HookError('error message', {
+        type: 'call',
+        hook: 'hook',
+        receiver: 'B',
+      }),
+    );
+    expect(mock1).toBeCalledTimes(1);
+    expect(mock2).toBeCalledTimes(0);
   });
 };

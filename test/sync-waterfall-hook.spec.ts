@@ -1,6 +1,5 @@
 import { SyncWaterfallHook } from 'tapcall';
-import HookError from 'tapcall/util/hook-error';
-import { testCreateNewHookWithArgs } from './common';
+import { testCreateNewHookWithArgs, testSyncHookError } from './common';
 
 describe('SyncWaterfallHook', () => {
   describe('new', () => {
@@ -34,20 +33,6 @@ describe('SyncWaterfallHook', () => {
   });
 
   describe('error', () => {
-    it('should throw an error when call', () => {
-      const hook = new SyncWaterfallHook<[a: number]>('hook');
-      hook.tap('A', jest.fn());
-      hook.tap('B', () => {
-        throw new Error('error message');
-      });
-      hook.tap('C', jest.fn());
-      expect(() => hook.call(1)).toThrowError(
-        new HookError('error message', {
-          type: 'call',
-          hook: 'hook',
-          receiver: 'B',
-        }),
-      );
-    });
+    testSyncHookError(SyncWaterfallHook);
   });
 });
