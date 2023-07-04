@@ -8,17 +8,8 @@ export default class SyncBailHook<
     for (let i = 0; i < this.callbacks.length; i++) {
       const name = this.options[i].name;
       const callback = this.callbacks[i];
-      try {
-        const result = callback(...args);
-        if (result !== undefined) return result;
-      } catch (err) {
-        const e = err as Error;
-        throw this.createError(e.message, {
-          type: 'call',
-          receiver: name,
-          stack: e.stack,
-        });
-      }
+      const result = this.runCallback(name, callback, args);
+      if (result !== undefined) return result;
     }
   }
 }

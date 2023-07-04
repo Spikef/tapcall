@@ -91,16 +91,7 @@ export default class Hook<
     for (let i = 0; i < this.callbacks.length; i++) {
       const name = this.options[i].name;
       const callback = this.callbacks[i];
-      try {
-        callback(...args);
-      } catch (err) {
-        const e = err as Error;
-        throw this.createError(e.message, {
-          type: 'call',
-          receiver: name,
-          stack: e.stack,
-        });
-      }
+      this.runCallback(name, callback, args);
     }
   }
 
@@ -129,7 +120,25 @@ export default class Hook<
     this.callbacks.splice(0, this.callbacks.length);
   }
 
-  protected createError(message: string, detail: IErrorDetail) {
-    return new HookError(message, { ...detail, hook: this.name });
+  protected createError(error: Error | unknown, detail: IErrorDetail) {
+    if (error instanceof Error) {
+      return new HookError(error.message, {
+        ...detail,
+        stack: error.stack,
+        hook: this.name,
+      });
+    }
+    return new HookError(String(error), { ...detail, hook: this.name });
+  }
+
+  protected runCallback(name: string, callback: Callback, args: Args) {
+    try {
+      return callback(...args);
+    } catch (err) {
+      throw this.createError(err, {
+        type: 'call',
+        receiver: name,
+      });
+    }
   }
 }
