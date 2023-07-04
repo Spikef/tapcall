@@ -9,10 +9,19 @@ export default class AsyncSeriesBailHook<
     for (let i = 0; i < this.callbacks.length; i++) {
       const name = this.options[i].name;
       const callback = this.callbacks[i];
-      promise = promise
-        ? promise.then(() => this.createPromise(name, args, callback))
-        : this.createPromise(name, args, callback);
+      promise = (
+        promise
+          ? promise.then(() => this.runCallback(name, callback, args))
+          : this.runCallback(name, callback, args)
+      ).then((value) => {
+        if (value !== undefined) return Promise.reject(value);
+      });
     }
-    return promise || Promise.resolve();
+    return (promise || Promise.resolve()).catch((error) => {
+      if (error instanceof Error) {
+        throw error;
+      }
+      return error;
+    });
   }
 }

@@ -1,9 +1,11 @@
 import { SyncWaterfallHook } from 'tapcall';
-import { testCreateNewHookWithArgs, testSyncHookError } from './common';
+import { testCallSyncHooks, testCreateNewHookWithArgs } from 'common';
 
 describe('SyncWaterfallHook', () => {
   describe('new', () => {
-    testCreateNewHookWithArgs(SyncWaterfallHook);
+    it('should allow to create sync waterfall hooks with args', () => {
+      testCreateNewHookWithArgs(SyncWaterfallHook);
+    });
   });
 
   describe('call', () => {
@@ -30,9 +32,14 @@ describe('SyncWaterfallHook', () => {
       hook.tap('C', (a, b) => a + b); // 21 + 10 => 31
       expect(hook.call(1, 10)).toBe(31);
     });
-  });
 
-  describe('error', () => {
-    testSyncHookError(SyncWaterfallHook);
+    it('should throw an error when callback throws error', () => {
+      testCallSyncHooks(SyncWaterfallHook, {
+        value1: undefined,
+        value2: new Error('error message'),
+        error: true,
+        calls3: [],
+      });
+    });
   });
 });

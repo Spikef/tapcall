@@ -1,17 +1,14 @@
 import { AsyncSeriesHook } from 'tapcall';
-import {
-  testAsyncHookError,
-  testCreateNewHookNoArgs,
-  testCreateNewHookWithArgs,
-} from './common';
+import { testCreateNewHookNoArgs, testCreateNewHookWithArgs } from 'common';
 
 describe('AsyncSeriesHook', () => {
   describe('new', () => {
-    testCreateNewHookNoArgs(AsyncSeriesHook);
-    testCreateNewHookWithArgs(AsyncSeriesHook);
-  });
+    it('should allow to create async series hooks without args', () => {
+      testCreateNewHookNoArgs(AsyncSeriesHook);
+    });
 
-  describe('error', () => {
-    testAsyncHookError(AsyncSeriesHook);
+    it('should allow to create async series hooks with args', () => {
+      testCreateNewHookWithArgs(AsyncSeriesHook);
+    });
   });
 });

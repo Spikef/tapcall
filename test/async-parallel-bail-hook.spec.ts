@@ -1,14 +1,27 @@
 import { AsyncParallelBailHook } from 'tapcall';
-import { testCreateNewHookNoArgs, testCreateNewHookWithArgs } from './common';
+import {
+  testCreateNewHookNoArgs,
+  testCreateNewHookWithArgs,
+  testCallEmptyAsyncHooks,
+} from 'common';
 import HookError from 'tapcall/util/hook-error';
 
 describe('AsyncParallelBailHook', () => {
   describe('new', () => {
-    testCreateNewHookNoArgs(AsyncParallelBailHook);
-    testCreateNewHookWithArgs(AsyncParallelBailHook);
+    it('should allow to create async parallel bail hooks without args', () => {
+      testCreateNewHookNoArgs(AsyncParallelBailHook);
+    });
+
+    it('should allow to create async parallel bail hooks with args', () => {
+      testCreateNewHookWithArgs(AsyncParallelBailHook);
+    });
   });
 
   describe('call', () => {
+    it('should return undefined when no hooks', async () => {
+      await testCallEmptyAsyncHooks(AsyncParallelBailHook);
+    });
+
     const calls: number[] = [];
     const createMock = (
       value: number | undefined | Error | string,

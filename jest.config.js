@@ -7,6 +7,7 @@ module.exports = {
   preset: 'ts-jest',
   testRegex: ['test/(.+)\\.spec\\.ts$'],
   moduleNameMapper: {
+    '^common$': `<rootDir>/test/__common__`,
     '^tapcall(.*)$': `<rootDir>/${source}$1`,
   },
   coverageDirectory: 'coverage',

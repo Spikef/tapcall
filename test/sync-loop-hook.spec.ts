@@ -1,14 +1,19 @@
 import { SyncLoopHook } from 'tapcall';
 import {
+  testCallSyncHooks,
   testCreateNewHookNoArgs,
   testCreateNewHookWithArgs,
-  testSyncHookError,
-} from './common';
+} from 'common';
 
 describe('SyncLoopHook', () => {
   describe('new', () => {
-    testCreateNewHookNoArgs(SyncLoopHook);
-    testCreateNewHookWithArgs(SyncLoopHook);
+    it('should allow to create sync loop hooks without args', () => {
+      testCreateNewHookNoArgs(SyncLoopHook);
+    });
+
+    it('should allow to create sync loop hooks with args', () => {
+      testCreateNewHookWithArgs(SyncLoopHook);
+    });
   });
 
   describe('call', () => {
@@ -28,9 +33,14 @@ describe('SyncLoopHook', () => {
       expect(mock1).toBeCalledTimes(3);
       expect(mock2).toBeCalledTimes(2);
     });
-  });
 
-  describe('error', () => {
-    testSyncHookError(SyncLoopHook);
+    it('should throw an error when callback throws error', () => {
+      testCallSyncHooks(SyncLoopHook, {
+        value1: undefined,
+        value2: new Error('error message'),
+        error: true,
+        calls3: [],
+      });
+    });
   });
 });

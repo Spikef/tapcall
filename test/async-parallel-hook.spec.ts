@@ -1,23 +1,24 @@
 import { AsyncParallelHook } from 'tapcall';
 import {
-  testAsyncHookError,
+  testCallEmptyAsyncHooks,
   testCreateNewHookNoArgs,
   testCreateNewHookWithArgs,
-} from './common';
+} from 'common';
 
 describe('AsyncParallelHook', () => {
   describe('new', () => {
-    testCreateNewHookNoArgs(AsyncParallelHook);
-    testCreateNewHookWithArgs(AsyncParallelHook);
+    it('should allow to create async parallel hooks without args', () => {
+      testCreateNewHookNoArgs(AsyncParallelHook);
+    });
+
+    it('should allow to create async parallel hooks with args', () => {
+      testCreateNewHookWithArgs(AsyncParallelHook);
+    });
   });
 
   describe('call', () => {
-    it('should return undefined when no hooks', (done) => {
-      const hook = new AsyncParallelHook('hook');
-      hook.call().then((result) => {
-        expect(result).toBeUndefined();
-        done();
-      });
+    it('should return undefined when no hooks', async () => {
+      await testCallEmptyAsyncHooks(AsyncParallelHook);
     });
 
     it('should return undefined when any hooks', (done) => {
@@ -30,9 +31,5 @@ describe('AsyncParallelHook', () => {
         done();
       });
     });
-  });
-
-  describe('error', () => {
-    testAsyncHookError(AsyncParallelHook);
   });
 });

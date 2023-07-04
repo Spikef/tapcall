@@ -1,12 +1,30 @@
 import { AsyncSeriesWaterfallHook } from 'tapcall';
-import { testAsyncHookError, testCreateNewHookWithArgs } from './common';
+import { testCallAsyncHooks, testCreateNewHookWithArgs } from 'common';
 
 describe('AsyncSeriesWaterfallHook', () => {
   describe('new', () => {
-    testCreateNewHookWithArgs(AsyncSeriesWaterfallHook);
+    it('should allow to create async series waterfall hooks with args', () => {
+      testCreateNewHookWithArgs(AsyncSeriesWaterfallHook);
+    });
   });
 
-  describe('error', () => {
-    testAsyncHookError(AsyncSeriesWaterfallHook);
+  describe('call', () => {
+    it('should reject with error when reject error', async () => {
+      await testCallAsyncHooks(AsyncSeriesWaterfallHook, {
+        value1: undefined,
+        value2: 'error message',
+        error: true,
+        calls3: [],
+      });
+    });
+
+    it('should reject with error when throw error', async () => {
+      await testCallAsyncHooks(AsyncSeriesWaterfallHook, {
+        value1: undefined,
+        value2: new Error('error message'),
+        error: true,
+        calls3: [],
+      });
+    });
   });
 });

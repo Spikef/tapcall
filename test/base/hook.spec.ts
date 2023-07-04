@@ -3,8 +3,9 @@ import HookError from 'tapcall/util/hook-error';
 import {
   testCreateNewHookNoArgs,
   testCreateNewHookWithArgs,
-  testSyncHookError,
-} from '../common';
+  testCallEmptySyncHooks,
+  testCallSyncHooks,
+} from 'common';
 
 describe('BaseHook', () => {
   describe('new', () => {
@@ -14,16 +15,19 @@ describe('BaseHook', () => {
 
   describe('call', () => {
     it('should return undefined when no hooks', () => {
-      const hook = new Hook('hook');
-      expect(hook.call()).toBeUndefined();
+      testCallEmptySyncHooks(Hook);
     });
 
     it('should return undefined when any hooks', () => {
-      const hook = new Hook('hook');
-      const mock1 = jest.fn(() => 1);
-      hook.tap('A', mock1);
-      expect(hook.call()).toBeUndefined();
-      expect(mock1).toHaveBeenCalledTimes(1);
+      testCallSyncHooks(Hook);
+    });
+
+    it('should throw an error when callback throws error', () => {
+      testCallSyncHooks(Hook, {
+        value2: new Error('error message'),
+        error: true,
+        calls3: [],
+      });
     });
   });
 
@@ -260,9 +264,5 @@ describe('BaseHook', () => {
       hook.call();
       expect(calls).toEqual([]);
     });
-  });
-
-  describe('error', () => {
-    testSyncHookError(Hook);
   });
 });
