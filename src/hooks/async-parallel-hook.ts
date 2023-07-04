@@ -3,7 +3,7 @@ import AsyncHook from './base/async-hook';
 export default class AsyncParallelHook<
   Args extends unknown[] = [],
   Return = void,
-> extends AsyncHook<Args, Return | Promise<Return>> {
+> extends AsyncHook<Args, Return> {
   call(...args: Args): Promise<Return[]> {
     const promises = [];
     for (let i = 0; i < this.callbacks.length; i++) {

@@ -6,7 +6,26 @@ import Hook from './hook';
 export default class AsyncHook<
   Args extends unknown[] = [],
   Return = void,
-> extends Hook<Args, Return> {
+> extends Hook<Args, Return | Promise<Return>> {
+  protected runCallback(
+    name: string,
+    callback: (...args: Args) => Return | Promise<Return>,
+    args: Args,
+  ) {
+    return new Promise<Return>((resolve, reject) => {
+      try {
+        resolve(callback(...args));
+      } catch (e) {
+        reject(e);
+      }
+    }).catch((err) => {
+      throw this.createError(err, {
+        type: 'call',
+        receiver: name,
+      });
+    });
+  }
+
   protected createPromise<Return>(
     name: string,
     args: Args,
@@ -19,22 +38,10 @@ export default class AsyncHook<
         reject(e);
       }
     }).catch((err) => {
-      if (err instanceof Error) {
-        return Promise.reject(
-          this.createError(err.message, {
-            type: 'call',
-            receiver: name,
-            stack: err.stack,
-          }),
-        );
-      } else {
-        return Promise.reject(
-          this.createError(String(err), {
-            type: 'call',
-            receiver: name,
-          }),
-        );
-      }
+      throw this.createError(err, {
+        type: 'call',
+        receiver: name,
+      });
     });
   }
 }

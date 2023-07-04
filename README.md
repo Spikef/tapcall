@@ -149,8 +149,8 @@ If a callback occurs an error or rejects a promise, it will end early and `rejec
 
 `AsyncParallelBailHook` is an asynchronous hook. It calls all callbacks registered to the hook in parallel.
 
-The `call` method returns a promise, which resolves the first returned value(except `undefined`) of the callbacks.
-If a callback occurs an error or rejects a promise, it will end early and `reject` the promise with a custom error.
+The `call` method returns a promise, which resolves the first NOT `undefined` value
+or rejects an error(which will be wrapped in a custom error) of the callbacks.
 
 ### AsyncSeriesHook
 

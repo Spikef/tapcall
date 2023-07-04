@@ -2,7 +2,7 @@ import AsyncHook from './base/async-hook';
 
 export default class AsyncSeriesWaterfallHook<
   Args extends [unknown, ...unknown[]],
-> extends AsyncHook<Args, Args[0] | void | Promise<Args[0] | void>> {
+> extends AsyncHook<Args, Args[0] | void> {
   call(...args: Args): Promise<Args[0] | void> {
     const newArgs: Args = [...args];
     let promise: Promise<Args[0] | void> | undefined;
