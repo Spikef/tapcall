@@ -149,7 +149,8 @@ class Cat {
 
 `AsyncParallelBailHook`为异步并行执行，会并发执行所有回调。
 
-`call`方法返回一个`Promise`对象，结果为回调返回的第一个**非**`undefined`值或`rejected`的错误(会被包装为一个自定义的错误)。
+`call`方法返回一个`Promise`对象，结果为回调返回的第一个**非**`undefined`值
+或`rejected`的错误(会被包装为一个自定义的错误)。
 
 ### AsyncSeriesHook
 
