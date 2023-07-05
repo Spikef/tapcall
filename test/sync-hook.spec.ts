@@ -1,5 +1,6 @@
 import { SyncHook } from 'tapcall';
 import {
+  testCallEmptySyncHooks,
   testCallSyncHooks,
   testCreateNewHookNoArgs,
   testCreateNewHookWithArgs,
@@ -18,23 +19,17 @@ describe('SyncHook', () => {
 
   describe('call', () => {
     it('should return undefined when no hooks', () => {
-      const hook = new SyncHook('hook');
-      expect(hook.call()).toBeUndefined();
+      testCallEmptySyncHooks(SyncHook);
     });
 
     it('should return undefined when any hooks', () => {
-      const hook = new SyncHook('hook');
-      const mock1 = jest.fn(() => 1);
-      hook.tap('A', mock1);
-      expect(hook.call()).toBeUndefined();
-      expect(mock1).toHaveBeenCalledTimes(1);
+      testCallSyncHooks(SyncHook);
     });
 
     it('should throw an error when callback throws error', () => {
       testCallSyncHooks(SyncHook, {
         value2: new Error('error message'),
         error: true,
-        calls3: [],
       });
     });
   });

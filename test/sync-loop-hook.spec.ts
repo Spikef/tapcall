@@ -1,5 +1,6 @@
 import { SyncLoopHook } from 'tapcall';
 import {
+  testCallEmptySyncHooks,
   testCallSyncHooks,
   testCreateNewHookNoArgs,
   testCreateNewHookWithArgs,
@@ -18,20 +19,20 @@ describe('SyncLoopHook', () => {
 
   describe('call', () => {
     it('should return undefined when no hooks', () => {
-      const hook = new SyncLoopHook('hook');
-      expect(hook.call()).toBeUndefined();
+      testCallEmptySyncHooks(SyncLoopHook);
     });
 
     it('should return undefined when any hooks', () => {
       let loopCount = 0;
-      const hook = new SyncLoopHook<[], boolean>('hook');
-      const mock1 = jest.fn(() => (++loopCount < 3 ? true : undefined));
-      const mock2 = jest.fn(() => (++loopCount < 5 ? true : undefined));
-      hook.tap('A', mock1);
-      hook.tap('B', mock2);
-      expect(hook.call()).toBeUndefined();
-      expect(mock1).toBeCalledTimes(3);
-      expect(mock2).toBeCalledTimes(2);
+      testCallSyncHooks(SyncLoopHook, {
+        value1: () => (++loopCount < 3 ? 1 : undefined),
+        value2: () => (++loopCount < 5 ? 2 : undefined),
+        value3: () => undefined,
+        order: [1, 1, 1, 2, 2, 3],
+        calls1: [0, 0, 0],
+        calls2: [0, 0],
+        calls3: [0],
+      });
     });
 
     it('should throw an error when callback throws error', () => {
@@ -39,7 +40,6 @@ describe('SyncLoopHook', () => {
         value1: undefined,
         value2: new Error('error message'),
         error: true,
-        calls3: [],
       });
     });
   });

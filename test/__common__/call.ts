@@ -1,26 +1,34 @@
 import { AsyncHookConstructor, HookConstructor } from './type';
 import HookError from 'tapcall/util/hook-error';
 
-type Value = number | undefined | string | Error;
-type Config = {
-  calls1?: (number | undefined)[];
-  calls2?: (number | undefined)[];
-  calls3?: (number | undefined)[];
-  value1?: Value;
-  value2?: Value;
-  value3?: Value;
-} & (
+type Numeric = number | undefined;
+
+type Value = Numeric | ((...args: number[]) => Numeric) | string | Error;
+
+type RESULT =
   | {
       error: true;
     }
   | {
       error?: false;
-      return?: number | undefined;
-    }
-);
-type AsyncConfig = Config & {
+      return?: number;
+    };
+
+type Expected = {
+  order: number[];
+  calls1: Numeric[];
+  calls2: Numeric[];
+  calls3: Numeric[];
   cost?: `${'>' | '<'}${number}`;
-};
+} & RESULT;
+
+type Config = {
+  args?: number[];
+  value1?: Value;
+  value2?: Value;
+  value3?: Value;
+} & RESULT &
+  Partial<Omit<Expected, 'error' | 'return'>>;
 
 const ERROR = new HookError('error message', {
   type: 'call',
@@ -39,37 +47,57 @@ function pick<T extends keyof Config>(
   return defaultValue;
 }
 
-function first<T>(arr: T[][]) {
-  return arr.map((item) => item[0]);
+function init(config: Config): Expected {
+  const defaults = {
+    order: [1, 2, 3],
+    calls1: [0],
+    calls2: [0],
+    calls3: [0],
+  };
+
+  if (config.value2 instanceof Error || typeof config.value2 === 'string') {
+    defaults.order = [1, 2];
+    defaults.calls3 = [];
+  }
+
+  return {
+    ...defaults,
+    ...config,
+  };
+}
+
+function flat<T>(arr: T[][]) {
+  return arr.reduce((result, item) => result.concat(item), []);
 }
 
 function asset(
   actual: {
-    return?: unknown;
+    return?: Numeric;
     error?: HookError;
     order: number[];
     mock1: jest.Mock;
     mock2: jest.Mock;
     mock3: jest.Mock;
   },
-  expected: Config,
+  expected: Expected,
 ) {
   if (!expected.error) {
     expect(actual.return).toEqual(expected.return);
   } else if (actual.error) {
+    expect(actual.error.name).toEqual(ERROR.name);
     expect(actual.error.message).toEqual(ERROR.message);
     expect(actual.error.type).toEqual(ERROR.type);
     expect(actual.error.hook).toEqual(ERROR.hook);
     expect(actual.error.receiver).toEqual(ERROR.receiver);
   } else {
-    throw new Error('Unexpected call result');
+    throw new Error('unexpected call result');
   }
 
-  expect(actual.order.every((item, i) => [1, 2, 3][i] === item)).toBeTruthy();
+  expect(actual.order).toEqual(expected.order);
 
-  expect(first(actual.mock1.mock.calls)).toEqual(expected.calls1 || [0]);
-  expect(first(actual.mock2.mock.calls)).toEqual(expected.calls2 || [0]);
-  expect(first(actual.mock3.mock.calls)).toEqual(expected.calls3 || [0]);
+  expect(flat(actual.mock1.mock.calls)).toEqual(expected.calls1);
+  expect(flat(actual.mock2.mock.calls)).toEqual(expected.calls2);
+  expect(flat(actual.mock3.mock.calls)).toEqual(expected.calls3);
 }
 
 export const testCallEmptySyncHooks = (
@@ -77,7 +105,7 @@ export const testCallEmptySyncHooks = (
   expected?: Value,
 ) => {
   const hook = new Hook('hook');
-  expect(hook.call(1)).toEqual(expected);
+  expect(hook.call(0)).toEqual(expected);
 };
 
 export const testCallEmptyAsyncHooks = async (
@@ -85,7 +113,7 @@ export const testCallEmptyAsyncHooks = async (
   expected?: Value,
 ) => {
   const hook = new Hook('hook');
-  expect(await hook.call(1)).toEqual(expected);
+  expect(await hook.call(0)).toEqual(expected);
 };
 
 export const testCallSyncHooks = (
@@ -96,16 +124,20 @@ export const testCallSyncHooks = (
   const order: number[] = [];
   const factory = (value: Value) => {
     const factoryIndex = ++index;
-    return () => {
+    return (...args: unknown[]) => {
       order.push(factoryIndex);
       if (value instanceof Error) {
         throw value;
       } else if (typeof value === 'string') {
         throw new Error(value);
+      } else if (typeof value === 'function') {
+        return value(...(args as number[]));
+      } else {
+        return value;
       }
-      return value;
     };
   };
+
   const mock1 = jest.fn(factory(pick(config, 'value1', 1)));
   const mock2 = jest.fn(factory(pick(config, 'value2', 2)));
   const mock3 = jest.fn(factory(pick(config, 'value3', 3)));
@@ -114,13 +146,15 @@ export const testCallSyncHooks = (
   hook.tap('B', mock2);
   hook.tap('C', mock3);
   let result;
-  let error: HookError | undefined;
+  let error;
   try {
-    result = hook.call(0);
+    const args = config.args || [0];
+    result = hook.call(...args) as Numeric;
   } catch (err) {
     error = err as HookError;
   }
 
+  const expected = init(config);
   asset(
     {
       return: result,
@@ -130,26 +164,28 @@ export const testCallSyncHooks = (
       mock2,
       mock3,
     },
-    config,
+    expected,
   );
 };
 
 export const testCallAsyncHooks = async (
   Hook: AsyncHookConstructor,
-  config: AsyncConfig = {},
+  config: Config = {},
 ) => {
   let index = 0;
   const order: number[] = [];
   const factory = (value: Value, timestamp: number) => {
     const factoryIndex = ++index;
-    return () => {
+    return (...args: unknown[]) => {
       order.push(factoryIndex);
-      return new Promise<number | undefined>((resolve, reject) => {
+      return new Promise<Numeric>((resolve, reject) => {
         setTimeout(() => {
-          if (typeof value === 'string') {
-            reject(value);
-          } else if (value instanceof Error) {
+          if (value instanceof Error) {
             throw value;
+          } else if (typeof value === 'string') {
+            reject(value);
+          } else if (typeof value === 'function') {
+            resolve(value(...(args as number[])));
           } else {
             resolve(value);
           }
@@ -164,24 +200,26 @@ export const testCallAsyncHooks = async (
   hook.tap('A', mock1);
   hook.tap('B', mock2);
   hook.tap('C', mock3);
-  let result: unknown;
-  let error: HookError | undefined;
+  let result;
+  let error;
   const start = Date.now();
   try {
-    result = await hook.call(0);
+    const args = config.args || [0];
+    result = (await hook.call(...args)) as Numeric;
   } catch (err) {
     error = err as HookError;
   }
-  if (config.cost) {
+
+  const expected = init(config);
+  if (expected.cost) {
     const actualCost = Date.now() - start;
-    const expectedCost = Number(config.cost.slice(1));
-    if (config.cost.startsWith('>')) {
+    const expectedCost = Number(expected.cost.slice(1));
+    if (expected.cost.startsWith('>')) {
       expect(actualCost).toBeGreaterThan(expectedCost);
     } else {
       expect(actualCost).toBeLessThan(expectedCost);
     }
   }
-
   asset(
     {
       return: result,
@@ -191,6 +229,6 @@ export const testCallAsyncHooks = async (
       mock2,
       mock3,
     },
-    config,
+    expected,
   );
 };

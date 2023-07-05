@@ -1,10 +1,10 @@
 import Hook from 'tapcall/hooks/base/hook';
 import HookError from 'tapcall/util/hook-error';
 import {
-  testCreateNewHookNoArgs,
-  testCreateNewHookWithArgs,
   testCallEmptySyncHooks,
   testCallSyncHooks,
+  testCreateNewHookNoArgs,
+  testCreateNewHookWithArgs,
 } from 'common';
 
 describe('BaseHook', () => {
@@ -26,7 +26,6 @@ describe('BaseHook', () => {
       testCallSyncHooks(Hook, {
         value2: new Error('error message'),
         error: true,
-        calls3: [],
       });
     });
   });
