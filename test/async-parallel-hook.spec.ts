@@ -1,5 +1,6 @@
 import { AsyncParallelHook } from 'tapcall';
 import {
+  testCallAsyncHooks,
   testCallEmptyAsyncHooks,
   testCreateNewHookNoArgs,
   testCreateNewHookWithArgs,
@@ -21,14 +22,27 @@ describe('AsyncParallelHook', () => {
       await testCallEmptyAsyncHooks(AsyncParallelHook);
     });
 
-    it('should return undefined when any hooks', (done) => {
-      const hook = new AsyncParallelHook<[], number>('hook');
-      hook.tap('A', () => 1);
-      hook.tap('B', () => 2);
-      hook.tap('C', () => 3);
-      hook.call().then((result) => {
-        expect(result).toBeUndefined();
-        done();
+    it('should return undefined when any hooks', async () => {
+      await testCallAsyncHooks(AsyncParallelHook);
+    });
+
+    it('should reject if any callback that rejects/throws', async () => {
+      await testCallAsyncHooks(AsyncParallelHook, {
+        value1: 'not reject this error because 1 rejects after 2',
+        value2: 'error message',
+        value3: undefined,
+        error: true,
+        order: [1, 2, 3],
+        calls3: [0],
+      });
+
+      await testCallAsyncHooks(AsyncParallelHook, {
+        value1: new Error('not reject this error because 1 throws after 2'),
+        value2: new Error('error message'),
+        value3: undefined,
+        error: true,
+        order: [1, 2, 3],
+        calls3: [0],
       });
     });
   });

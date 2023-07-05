@@ -179,19 +179,17 @@ export const testCallAsyncHooks = async (
     const factoryIndex = ++index;
     return (...args: unknown[]) => {
       order.push(factoryIndex);
-      return new Promise<Numeric>((resolve, reject) => {
+      return new Promise<Numeric>((resolve) => {
+        setTimeout(() => resolve(0), timestamp);
+      }).then(() => {
         if (value instanceof Error) {
-          throw value; // throw error after setTimeout can not be caught
+          throw value;
+        } else if (typeof value === 'string') {
+          return Promise.reject(value);
+        } else if (typeof value === 'function') {
+          return value(...(args as number[]));
         } else {
-          setTimeout(() => {
-            if (typeof value === 'string') {
-              reject(value);
-            } else if (typeof value === 'function') {
-              resolve(value(...(args as number[])));
-            } else {
-              resolve(value);
-            }
-          }, timestamp);
+          return value;
         }
       });
     };
