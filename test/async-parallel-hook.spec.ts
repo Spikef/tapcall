@@ -23,14 +23,16 @@ describe('AsyncParallelHook', () => {
     });
 
     it('should return undefined when any hooks', async () => {
-      await testCallAsyncHooks(AsyncParallelHook);
+      await testCallAsyncHooks(AsyncParallelHook, {
+        cost: [400, 420],
+      });
     });
 
     it('should reject if any callback that rejects/throws', async () => {
       await testCallAsyncHooks(AsyncParallelHook, {
         value1: 'not reject this error because 1 rejects after 2',
         value2: 'error message',
-        value3: undefined,
+        value3: 3,
         error: true,
         order: [1, 2, 3],
         calls3: [10, 20],
@@ -39,7 +41,7 @@ describe('AsyncParallelHook', () => {
       await testCallAsyncHooks(AsyncParallelHook, {
         value1: new Error('not reject this error because 1 throws after 2'),
         value2: new Error('error message'),
-        value3: undefined,
+        value3: 3,
         error: true,
         order: [1, 2, 3],
         calls3: [10, 20],

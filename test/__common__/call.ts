@@ -194,9 +194,9 @@ export const testCallAsyncHooks = async (
       });
     };
   };
-  const mock1 = jest.fn(factory(pick(config, 'value1', 1), 30));
-  const mock2 = jest.fn(factory(pick(config, 'value2', 2), 20));
-  const mock3 = jest.fn(factory(pick(config, 'value3', 3), 10));
+  const mock1 = jest.fn(factory(pick(config, 'value1', 1), 400));
+  const mock2 = jest.fn(factory(pick(config, 'value2', 2), 200));
+  const mock3 = jest.fn(factory(pick(config, 'value3', 3), 100));
   const hook = new Hook('hook');
   hook.tap('A', mock1);
   hook.tap('B', mock2);
@@ -210,10 +210,10 @@ export const testCallAsyncHooks = async (
   } catch (err) {
     error = err as HookError;
   }
+  const cost = Date.now() - start;
 
   const expected = init(config);
   if (expected.cost) {
-    const cost = Date.now() - start;
     expect(cost).not.toBeLessThan(expected.cost[0]);
     expect(cost).not.toBeGreaterThan(expected.cost[1]);
   }

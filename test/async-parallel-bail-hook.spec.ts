@@ -26,7 +26,7 @@ describe('AsyncParallelBailHook', () => {
       await testCallAsyncHooks(AsyncParallelBailHook, {
         value1: undefined,
         return: 2,
-        cost: [30, 35],
+        cost: [400, 420],
       });
     });
 
@@ -53,8 +53,8 @@ describe('AsyncParallelBailHook', () => {
     it('should not reject if returned value before rejects/throws', async () => {
       await testCallAsyncHooks(AsyncParallelBailHook, {
         value1: 1,
-        value2: 'error message',
-        value3: 'other error message', // rejects before 2
+        value2: 'not reject this error because 1 resolves a value',
+        value3: 'not reject this error because 1 resolves a value',
         return: 1,
         order: [1, 2, 3],
         calls3: [10, 20],
@@ -62,8 +62,8 @@ describe('AsyncParallelBailHook', () => {
 
       await testCallAsyncHooks(AsyncParallelBailHook, {
         value1: 1,
-        value2: new Error('error message'),
-        value3: new Error('other error message'), // throws before 2
+        value2: new Error('not reject this error because 1 resolves a value'),
+        value3: new Error('not reject this error because 1 resolves a value'),
         return: 1,
         order: [1, 2, 3],
         calls3: [10, 20],
