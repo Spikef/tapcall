@@ -33,7 +33,7 @@ describe('AsyncParallelHook', () => {
         value3: undefined,
         error: true,
         order: [1, 2, 3],
-        calls3: [0],
+        calls3: [10, 20],
       });
 
       await testCallAsyncHooks(AsyncParallelHook, {
@@ -42,7 +42,7 @@ describe('AsyncParallelHook', () => {
         value3: undefined,
         error: true,
         order: [1, 2, 3],
-        calls3: [0],
+        calls3: [10, 20],
       });
     });
   });

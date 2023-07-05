@@ -50,9 +50,9 @@ function pick<T extends keyof Config>(
 function init(config: Config): Expected {
   const defaults = {
     order: [1, 2, 3],
-    calls1: [0],
-    calls2: [0],
-    calls3: [0],
+    calls1: [10, 20],
+    calls2: [10, 20],
+    calls3: [10, 20],
   };
 
   if (config.value2 instanceof Error || typeof config.value2 === 'string') {
@@ -106,7 +106,7 @@ export const testCallEmptySyncHooks = (
   expected?: Value,
 ) => {
   const hook = new Hook('hook');
-  expect(hook.call(0)).toEqual(expected);
+  expect(hook.call(10, 20)).toEqual(expected);
 };
 
 export const testCallEmptyAsyncHooks = async (
@@ -114,7 +114,7 @@ export const testCallEmptyAsyncHooks = async (
   expected?: Value,
 ) => {
   const hook = new Hook('hook');
-  expect(await hook.call(0)).toEqual(expected);
+  expect(await hook.call(10, 20)).toEqual(expected);
 };
 
 export const testCallSyncHooks = (
@@ -149,7 +149,7 @@ export const testCallSyncHooks = (
   let result;
   let error;
   try {
-    const args = config.args || [0];
+    const args = config.args || [10, 20];
     result = hook.call(...args) as Numeric;
   } catch (err) {
     error = err as HookError;
@@ -205,7 +205,7 @@ export const testCallAsyncHooks = async (
   let error;
   const start = Date.now();
   try {
-    const args = config.args || [0];
+    const args = config.args || [10, 20];
     result = (await hook.call(...args)) as Numeric;
   } catch (err) {
     error = err as HookError;

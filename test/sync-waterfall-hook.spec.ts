@@ -14,19 +14,18 @@ describe('SyncWaterfallHook', () => {
 
   describe('call', () => {
     it('should return the args[0] when no hooks', () => {
-      testCallEmptySyncHooks(SyncWaterfallHook, 0);
+      testCallEmptySyncHooks(SyncWaterfallHook, 10);
     });
 
     it('should return the last value NOT undefined value', () => {
       testCallSyncHooks(SyncWaterfallHook, {
-        args: [1, 2],
-        value1: (a, b) => a + b, // 1 + 2 => 3
+        value1: (a, b) => a + b, // 10 + 20 => 30
         value2: () => undefined,
-        value3: (a, b) => a * b, // 3 * 2 => 6
-        return: 6,
-        calls1: [1, 2],
-        calls2: [3, 2],
-        calls3: [3, 2],
+        value3: (a, b) => a * b, // 30 * 20 => 600
+        return: 600,
+        calls1: [10, 20],
+        calls2: [30, 20],
+        calls3: [30, 20],
       });
     });
 

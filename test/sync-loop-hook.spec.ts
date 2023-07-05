@@ -29,9 +29,9 @@ describe('SyncLoopHook', () => {
         value2: () => (++loopCount < 5 ? 2 : undefined),
         value3: () => undefined,
         order: [1, 1, 1, 2, 2, 3],
-        calls1: [0, 0, 0],
-        calls2: [0, 0],
-        calls3: [0],
+        calls1: [10, 20, 10, 20, 10, 20],
+        calls2: [10, 20, 10, 20],
+        calls3: [10, 20],
       });
     });
 

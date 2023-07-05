@@ -37,7 +37,7 @@ describe('AsyncParallelBailHook', () => {
         value3: 'not reject this error because 3 runs after 2',
         error: true,
         order: [1, 2, 3],
-        calls3: [0],
+        calls3: [10, 20],
       });
 
       await testCallAsyncHooks(AsyncParallelBailHook, {
@@ -46,7 +46,7 @@ describe('AsyncParallelBailHook', () => {
         value3: new Error('not reject this error because 3 runs after 2'),
         error: true,
         order: [1, 2, 3],
-        calls3: [0],
+        calls3: [10, 20],
       });
     });
 
@@ -57,7 +57,7 @@ describe('AsyncParallelBailHook', () => {
         value3: 'other error message', // rejects before 2
         return: 1,
         order: [1, 2, 3],
-        calls3: [0],
+        calls3: [10, 20],
       });
 
       await testCallAsyncHooks(AsyncParallelBailHook, {
@@ -66,7 +66,7 @@ describe('AsyncParallelBailHook', () => {
         value3: new Error('other error message'), // throws before 2
         return: 1,
         order: [1, 2, 3],
-        calls3: [0],
+        calls3: [10, 20],
       });
     });
   });
