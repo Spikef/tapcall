@@ -18,10 +18,10 @@ export default class AsyncParallelBailHook<
     }
     return Promise.all(promises).then((results) => {
       for (let i = 0; i < results.length; i++) {
-        if (results[i] !== undefined) {
-          return results[i];
-        } else if (results[i] instanceof HookError) {
+        if (results[i] instanceof HookError) {
           return Promise.reject(results[i]);
+        } else if (results[i] !== undefined) {
+          return Promise.resolve(results[i]);
         }
       }
     });

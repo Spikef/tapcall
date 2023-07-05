@@ -19,7 +19,7 @@ type Expected = {
   calls1: Numeric[];
   calls2: Numeric[];
   calls3: Numeric[];
-  cost?: `${'>' | '<'}${number}`;
+  cost?: [least: number, most: number];
 } & RESULT;
 
 type Config = {
@@ -180,17 +180,19 @@ export const testCallAsyncHooks = async (
     return (...args: unknown[]) => {
       order.push(factoryIndex);
       return new Promise<Numeric>((resolve, reject) => {
-        setTimeout(() => {
-          if (value instanceof Error) {
-            throw value;
-          } else if (typeof value === 'string') {
-            reject(value);
-          } else if (typeof value === 'function') {
-            resolve(value(...(args as number[])));
-          } else {
-            resolve(value);
-          }
-        }, timestamp);
+        if (value instanceof Error) {
+          throw value; // throw error after setTimeout can not be caught
+        } else {
+          setTimeout(() => {
+            if (typeof value === 'string') {
+              reject(value);
+            } else if (typeof value === 'function') {
+              resolve(value(...(args as number[])));
+            } else {
+              resolve(value);
+            }
+          }, timestamp);
+        }
       });
     };
   };
@@ -213,13 +215,9 @@ export const testCallAsyncHooks = async (
 
   const expected = init(config);
   if (expected.cost) {
-    const actualCost = Date.now() - start;
-    const expectedCost = Number(expected.cost.slice(1));
-    if (expected.cost.startsWith('>')) {
-      expect(actualCost).toBeGreaterThan(expectedCost);
-    } else {
-      expect(actualCost).toBeLessThan(expectedCost);
-    }
+    const cost = Date.now() - start;
+    expect(cost).not.toBeLessThan(expected.cost[0]);
+    expect(cost).not.toBeGreaterThan(expected.cost[1]);
   }
   asset(
     {

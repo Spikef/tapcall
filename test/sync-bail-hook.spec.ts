@@ -26,7 +26,6 @@ describe('SyncBailHook', () => {
       testCallSyncHooks(SyncBailHook, {
         value1: undefined,
         return: 2,
-        calls3: [],
       });
     });
 
