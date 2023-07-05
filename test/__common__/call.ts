@@ -90,6 +90,7 @@ function asset(
     expect(actual.error.hook).toEqual(ERROR.hook);
     expect(actual.error.receiver).toEqual(ERROR.receiver);
   } else {
+    console.log('actual', actual.error, actual.return);
     throw new Error('unexpected call result');
   }
 
