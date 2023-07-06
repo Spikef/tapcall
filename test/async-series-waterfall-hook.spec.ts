@@ -46,17 +46,17 @@ describe('AsyncSeriesWaterfallHook', () => {
       });
 
       await testCallAsyncHooks(AsyncSeriesWaterfallHook, {
-        value1: 1,
         value2: 'error message',
         value3: 'not reject this error because 3 will not run',
         error: true,
+        calls2: [1, 20],
       });
 
       await testCallAsyncHooks(AsyncSeriesWaterfallHook, {
-        value1: 1,
         value2: new Error('error message'),
         value3: new Error('not reject this error because 3 will not run'),
         error: true,
+        calls2: [1, 20],
       });
     });
   });

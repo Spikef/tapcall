@@ -15,6 +15,7 @@ export default class AsyncSeriesWaterfallHook<
           : this.createPromise(name, newArgs, callback)
       ).then((waterfall) => {
         if (waterfall !== undefined) newArgs[0] = waterfall;
+        return newArgs[0];
       });
     }
     return promise || Promise.resolve(newArgs[0]);
