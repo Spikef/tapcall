@@ -1,9 +1,9 @@
-import { SyncWaterfallHook } from 'tapcall';
-import {
+const { SyncWaterfallHook } = require('tapable');
+const {
   testCallEmptySyncHooks,
   testCallSyncHooks,
   testCreateNewHookWithArgs,
-} from 'common';
+} = require('./common');
 
 describe('SyncWaterfallHook', () => {
   describe('new', () => {

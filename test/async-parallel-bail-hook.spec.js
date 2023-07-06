@@ -1,19 +1,19 @@
-import { AsyncParallelBailHook } from 'tapcall';
-import {
+const { AsyncParallelBailHook } = require('tapable');
+const {
   testCallAsyncHooks,
   testCallEmptyAsyncHooks,
-  testCreateNewHookNoArgs,
-  testCreateNewHookWithArgs,
-} from 'common';
+  testCreateNewAsyncHookNoArgs,
+  testCreateNewAsyncHookWithArgs,
+} = require('./common');
 
 describe('AsyncParallelBailHook', () => {
   describe('new', () => {
     it('should allow to create async parallel bail hooks without args', () => {
-      testCreateNewHookNoArgs(AsyncParallelBailHook);
+      testCreateNewAsyncHookNoArgs(AsyncParallelBailHook);
     });
 
     it('should allow to create async parallel bail hooks with args', () => {
-      testCreateNewHookWithArgs(AsyncParallelBailHook);
+      testCreateNewAsyncHookWithArgs(AsyncParallelBailHook);
     });
   });
 

@@ -1,19 +1,19 @@
-import { AsyncSeriesLoopHook } from 'tapcall';
-import {
+const { AsyncSeriesLoopHook } = require('tapable');
+const {
   testCallAsyncHooks,
   testCallEmptyAsyncHooks,
-  testCreateNewHookNoArgs,
-  testCreateNewHookWithArgs,
-} from 'common';
+  testCreateNewAsyncHookNoArgs,
+  testCreateNewAsyncHookWithArgs,
+} = require('./common');
 
 describe('AsyncSeriesLoopHook', () => {
   describe('new', () => {
     it('should allow to create async series loop hooks without args', () => {
-      testCreateNewHookNoArgs(AsyncSeriesLoopHook);
+      testCreateNewAsyncHookNoArgs(AsyncSeriesLoopHook);
     });
 
     it('should allow to create async series loop hooks with args', () => {
-      testCreateNewHookWithArgs(AsyncSeriesLoopHook);
+      testCreateNewAsyncHookWithArgs(AsyncSeriesLoopHook);
     });
   });
 
@@ -30,9 +30,9 @@ describe('AsyncSeriesLoopHook', () => {
         value1: () => (++loopCount < 3 ? 1 : undefined),
         value2: () => (++loopCount < 5 ? 2 : undefined),
         value3: () => undefined,
-        cost: 17000,
-        order: [1, 1, 1, 2, 2, 3],
-        calls1: [10, 20, 10, 20, 10, 20],
+        cost: 21000,
+        order: [1, 1, 1, 2, 1, 2, 3],
+        calls1: [10, 20, 10, 20, 10, 20, 10, 20],
         calls2: [10, 20, 10, 20],
         calls3: [10, 20],
       });

@@ -1,19 +1,19 @@
-import { AsyncSeriesBailHook } from 'tapcall';
-import {
+const { AsyncSeriesBailHook } = require('tapable');
+const {
   testCallAsyncHooks,
   testCallEmptyAsyncHooks,
-  testCreateNewHookNoArgs,
-  testCreateNewHookWithArgs,
-} from 'common';
+  testCreateNewAsyncHookNoArgs,
+  testCreateNewAsyncHookWithArgs,
+} = require('./common');
 
 describe('AsyncSeriesBailHook', () => {
   describe('new', () => {
     it('should allow to create async series bail hooks without args', () => {
-      testCreateNewHookNoArgs(AsyncSeriesBailHook);
+      testCreateNewAsyncHookNoArgs(AsyncSeriesBailHook);
     });
 
     it('should allow to create async series bail hooks with args', () => {
-      testCreateNewHookWithArgs(AsyncSeriesBailHook);
+      testCreateNewAsyncHookWithArgs(AsyncSeriesBailHook);
     });
   });
 

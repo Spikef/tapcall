@@ -1,10 +1,10 @@
-import { SyncLoopHook } from 'tapcall';
-import {
+const { SyncLoopHook } = require('tapable');
+const {
   testCallEmptySyncHooks,
   testCallSyncHooks,
   testCreateNewHookNoArgs,
   testCreateNewHookWithArgs,
-} from 'common';
+} = require('./common');
 
 describe('SyncLoopHook', () => {
   describe('new', () => {
@@ -30,8 +30,8 @@ describe('SyncLoopHook', () => {
         value1: () => (++loopCount < 3 ? 1 : undefined),
         value2: () => (++loopCount < 5 ? 2 : undefined),
         value3: () => undefined,
-        order: [1, 1, 1, 2, 2, 3],
-        calls1: [10, 20, 10, 20, 10, 20],
+        order: [1, 1, 1, 2, 1, 2, 3],
+        calls1: [10, 20, 10, 20, 10, 20, 10, 20],
         calls2: [10, 20, 10, 20],
         calls3: [10, 20],
       });

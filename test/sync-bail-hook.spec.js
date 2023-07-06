@@ -1,10 +1,10 @@
-import { SyncBailHook } from 'tapcall';
-import {
+const { SyncBailHook } = require('tapable');
+const {
   testCallEmptySyncHooks,
   testCallSyncHooks,
   testCreateNewHookNoArgs,
   testCreateNewHookWithArgs,
-} from 'common';
+} = require('./common');
 
 describe('SyncBailHook', () => {
   describe('new', () => {

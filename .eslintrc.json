@@ -2,7 +2,8 @@
   "root": true,
   "env": {
     "es6": true,
-    "node": true
+    "node": true,
+    "jest": true
   },
   "parserOptions": {
     "ecmaVersion": 2020,
@@ -14,23 +15,5 @@
   ],
   "ignorePatterns": [
     "lib/"
-  ],
-  "overrides": [
-    {
-      "files": ["*.ts"],
-      "extends": [
-        "eslint:recommended",
-        "plugin:@typescript-eslint/recommended",
-        "plugin:prettier/recommended"
-      ],
-      "plugins": ["@typescript-eslint"],
-      "parser": "@typescript-eslint/parser",
-      "rules": {
-        "@typescript-eslint/ban-ts-comment": 0
-      },
-      "parserOptions": {
-        "project": "./tsconfig.json"
-      }
-    }
   ]
 }

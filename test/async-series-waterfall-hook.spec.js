@@ -1,14 +1,14 @@
-import { AsyncSeriesWaterfallHook } from 'tapcall';
-import {
+const { AsyncSeriesWaterfallHook } = require('tapable');
+const {
   testCallAsyncHooks,
   testCallEmptyAsyncHooks,
-  testCreateNewHookWithArgs,
-} from 'common';
+  testCreateNewAsyncHookWithArgs,
+} = require('./common');
 
 describe('AsyncSeriesWaterfallHook', () => {
   describe('new', () => {
     it('should allow to create async series waterfall hooks with args', () => {
-      testCreateNewHookWithArgs(AsyncSeriesWaterfallHook);
+      testCreateNewAsyncHookWithArgs(AsyncSeriesWaterfallHook);
     });
   });
 

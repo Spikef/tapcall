@@ -1,19 +1,19 @@
-import { AsyncSeriesHook } from 'tapcall';
-import {
+const { AsyncSeriesHook } = require('tapable');
+const {
   testCallAsyncHooks,
   testCallEmptyAsyncHooks,
-  testCreateNewHookNoArgs,
-  testCreateNewHookWithArgs,
-} from 'common';
+  testCreateNewAsyncHookNoArgs,
+  testCreateNewAsyncHookWithArgs,
+} = require('./common');
 
 describe('AsyncSeriesHook', () => {
   describe('new', () => {
     it('should allow to create async series hooks without args', () => {
-      testCreateNewHookNoArgs(AsyncSeriesHook);
+      testCreateNewAsyncHookNoArgs(AsyncSeriesHook);
     });
 
     it('should allow to create async series hooks with args', () => {
-      testCreateNewHookWithArgs(AsyncSeriesHook);
+      testCreateNewAsyncHookWithArgs(AsyncSeriesHook);
     });
   });
 
