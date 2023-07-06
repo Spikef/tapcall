@@ -31,8 +31,5 @@
     "ts-jest": "^29.1.0",
     "typescript": "^5.1.3"
   },
-  "license": "MIT",
-  "dependencies": {
-    "tapable": "^2.2.1"
-  }
+  "license": "MIT"
 }
