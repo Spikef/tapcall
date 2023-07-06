@@ -27,14 +27,14 @@ describe('AsyncSeriesLoopHook', () => {
     loopCount = 0;
     it('should return undefined no matter what value hooks return', async () => {
       await testCallAsyncHooks(AsyncSeriesLoopHook, {
-        value1: () => (++loopCount < 3 ? 1 : undefined),
-        value2: () => (++loopCount < 5 ? 2 : undefined),
-        value3: () => undefined,
-        cost: 21000,
-        order: [1, 1, 1, 2, 1, 2, 3],
-        calls1: [10, 20, 10, 20, 10, 20, 10, 20],
-        calls2: [10, 20, 10, 20],
-        calls3: [10, 20],
+        value1: () => (++loopCount < 2 ? 1 : undefined),
+        value2: () => (++loopCount < 5 ? 1 : undefined),
+        value3: () => (++loopCount < 10 ? 1 : undefined),
+        cost: 31000, // (5 * 4 + 4 * 2 + 3 * 1) * 1000
+        order: [1, 1, /**/ 2, 1, 2, /**/ 3, 1, 2, 3, 1, 2, 3],
+        calls1: [10, 20, 10, 20, 10, 20, 10, 20, 10, 20],
+        calls2: [10, 20, 10, 20, 10, 20, 10, 20],
+        calls3: [10, 20, 10, 20, 10, 20],
       });
     });
 
