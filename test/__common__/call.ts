@@ -1,6 +1,5 @@
 import { AsyncHookConstructor, HookConstructor } from './type';
 import HookError from 'tapcall/util/hook-error';
-import * as console from 'console';
 
 type Numeric = number | undefined;
 
