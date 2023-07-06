@@ -32,8 +32,30 @@ describe('SyncWaterfallHook', () => {
     it('should throw if any callback throws', () => {
       testCallSyncHooks(SyncWaterfallHook, {
         value1: undefined,
-        value2: new Error('error message'),
+        value2: 'error message',
+        value3: 'not throw this error because 3 will not run',
         error: true,
+      });
+
+      testCallSyncHooks(SyncWaterfallHook, {
+        value1: undefined,
+        value2: new Error('error message'),
+        value3: new Error('not throw this error because 3 will not run'),
+        error: true,
+      });
+
+      testCallSyncHooks(SyncWaterfallHook, {
+        value2: 'error message',
+        value3: 'not throw this error because 3 will not run',
+        error: true,
+        calls2: [1, 20],
+      });
+
+      testCallSyncHooks(SyncWaterfallHook, {
+        value2: new Error('error message'),
+        value3: new Error('not throw this error because 3 will not run'),
+        error: true,
+        calls2: [1, 20],
       });
     });
   });
