@@ -4,7 +4,7 @@ export default class AsyncSeriesHook<
   Args extends unknown[] = [],
   Return = void,
 > extends AsyncHook<Args, Return | void> {
-  call(...args: Args): Promise<Return | void> {
+  call(...args: Args): Promise<void> {
     let promise: Promise<Return | void> | undefined;
     for (let i = 0; i < this.callbacks.length; i++) {
       const name = this.options[i].name;
@@ -13,6 +13,6 @@ export default class AsyncSeriesHook<
         ? promise.then(() => this.createPromise(name, args, callback))
         : this.createPromise(name, args, callback);
     }
-    return promise || Promise.resolve();
+    return promise?.then(() => undefined) || Promise.resolve();
   }
 }

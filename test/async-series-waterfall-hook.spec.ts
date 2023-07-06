@@ -1,5 +1,9 @@
 import { AsyncSeriesWaterfallHook } from 'tapcall';
-import { testCallAsyncHooks, testCreateNewHookWithArgs } from 'common';
+import {
+  testCallAsyncHooks,
+  testCallEmptyAsyncHooks,
+  testCreateNewHookWithArgs,
+} from 'common';
 
 describe('AsyncSeriesWaterfallHook', () => {
   describe('new', () => {
@@ -9,6 +13,10 @@ describe('AsyncSeriesWaterfallHook', () => {
   });
 
   describe('call', () => {
+    it('should return undefined when no hooks', async () => {
+      await testCallEmptyAsyncHooks(AsyncSeriesWaterfallHook);
+    });
+
     it('should reject with error when reject error', async () => {
       await testCallAsyncHooks(AsyncSeriesWaterfallHook, {
         value1: undefined,

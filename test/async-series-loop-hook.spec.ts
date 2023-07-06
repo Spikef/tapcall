@@ -1,5 +1,10 @@
 import { AsyncSeriesLoopHook } from 'tapcall';
-import { testCreateNewHookNoArgs, testCreateNewHookWithArgs } from 'common';
+import {
+  testCallAsyncHooks,
+  testCallEmptyAsyncHooks,
+  testCreateNewHookNoArgs,
+  testCreateNewHookWithArgs,
+} from 'common';
 
 describe('AsyncSeriesLoopHook', () => {
   describe('new', () => {
@@ -9,6 +14,16 @@ describe('AsyncSeriesLoopHook', () => {
 
     it('should allow to create async series loop hooks with args', () => {
       testCreateNewHookWithArgs(AsyncSeriesLoopHook);
+    });
+  });
+
+  describe('call', () => {
+    it('should return undefined when no hooks', async () => {
+      await testCallEmptyAsyncHooks(AsyncSeriesLoopHook);
+    });
+
+    it('should return undefined when any hooks', async () => {
+      await testCallAsyncHooks(AsyncSeriesLoopHook);
     });
   });
 });
