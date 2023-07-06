@@ -1,5 +1,6 @@
 import { AsyncHookConstructor, HookConstructor } from './type';
 import HookError from 'tapcall/util/hook-error';
+import * as console from 'console';
 
 type Numeric = number | undefined;
 
@@ -19,7 +20,7 @@ type Expected = {
   calls1: Numeric[];
   calls2: Numeric[];
   calls3: Numeric[];
-  cost?: [least: number, most: number];
+  cost?: number;
 } & RESULT;
 
 type Config = {
@@ -71,13 +72,9 @@ function flat<T>(arr: T[][]) {
 }
 
 function asset(
-  actual: {
+  actual: Omit<Expected, 'error' | 'return'> & {
     return?: Numeric;
     error?: HookError;
-    order: number[];
-    mock1: jest.Mock;
-    mock2: jest.Mock;
-    mock3: jest.Mock;
   },
   expected: Expected,
 ) {
@@ -96,9 +93,13 @@ function asset(
 
   expect(actual.order).toEqual(expected.order);
 
-  expect(flat(actual.mock1.mock.calls)).toEqual(expected.calls1);
-  expect(flat(actual.mock2.mock.calls)).toEqual(expected.calls2);
-  expect(flat(actual.mock3.mock.calls)).toEqual(expected.calls3);
+  expect(actual.calls1).toEqual(expected.calls1);
+  expect(actual.calls2).toEqual(expected.calls2);
+  expect(actual.calls3).toEqual(expected.calls3);
+
+  if (expected.cost) {
+    expect(actual.cost).toEqual(expected.cost);
+  }
 }
 
 export const testCallEmptySyncHooks = (
@@ -138,7 +139,6 @@ export const testCallSyncHooks = (
       }
     };
   };
-
   const mock1 = jest.fn(factory(pick(config, 'value1', 1)));
   const mock2 = jest.fn(factory(pick(config, 'value2', 2)));
   const mock3 = jest.fn(factory(pick(config, 'value3', 3)));
@@ -154,34 +154,36 @@ export const testCallSyncHooks = (
   } catch (err) {
     error = err as HookError;
   }
-
+  const actual = {
+    return: result,
+    error,
+    order,
+    calls1: flat(mock1.mock.calls) as Numeric[],
+    calls2: flat(mock2.mock.calls) as Numeric[],
+    calls3: flat(mock3.mock.calls) as Numeric[],
+  };
   const expected = init(config);
-  asset(
-    {
-      return: result,
-      error,
-      order,
-      mock1,
-      mock2,
-      mock3,
-    },
-    expected,
-  );
+  asset(actual, expected);
 };
 
 export const testCallAsyncHooks = async (
   Hook: AsyncHookConstructor,
   config: Config = {},
 ) => {
+  let cost = 0;
+  let running = 0;
   let index = 0;
   const order: number[] = [];
   const factory = (value: Value, timestamp: number) => {
     const factoryIndex = ++index;
     return (...args: unknown[]) => {
+      running++;
       order.push(factoryIndex);
       return new Promise<Numeric>((resolve) => {
         setTimeout(() => resolve(0), timestamp);
       }).then(() => {
+        running--;
+        if (!running) cost += timestamp * 10;
         if (value instanceof Error) {
           throw value;
         } else if (typeof value === 'string') {
@@ -194,38 +196,31 @@ export const testCallAsyncHooks = async (
       });
     };
   };
-  const mock1 = jest.fn(factory(pick(config, 'value1', 1), 400));
-  const mock2 = jest.fn(factory(pick(config, 'value2', 2), 200));
-  const mock3 = jest.fn(factory(pick(config, 'value3', 3), 100));
+
+  const mock1 = jest.fn(factory(pick(config, 'value1', 1), 40));
+  const mock2 = jest.fn(factory(pick(config, 'value2', 2), 20));
+  const mock3 = jest.fn(factory(pick(config, 'value3', 3), 10));
   const hook = new Hook('hook');
   hook.tap('A', mock1);
   hook.tap('B', mock2);
   hook.tap('C', mock3);
   let result;
   let error;
-  const start = Date.now();
   try {
     const args = config.args || [10, 20];
     result = (await hook.call(...args)) as Numeric;
   } catch (err) {
     error = err as HookError;
   }
-  const cost = Date.now() - start;
-
+  const actual = {
+    return: result,
+    error,
+    order,
+    calls1: flat(mock1.mock.calls) as Numeric[],
+    calls2: flat(mock2.mock.calls) as Numeric[],
+    calls3: flat(mock3.mock.calls) as Numeric[],
+    cost,
+  };
   const expected = init(config);
-  if (expected.cost) {
-    expect(cost).not.toBeLessThan(expected.cost[0]);
-    expect(cost).not.toBeGreaterThan(expected.cost[1]);
-  }
-  asset(
-    {
-      return: result,
-      error,
-      order,
-      mock1,
-      mock2,
-      mock3,
-    },
-    expected,
-  );
+  asset(actual, expected);
 };

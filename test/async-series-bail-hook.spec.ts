@@ -26,7 +26,7 @@ describe('AsyncSeriesBailHook', () => {
       await testCallAsyncHooks(AsyncSeriesBailHook, {
         value1: undefined,
         return: 2,
-        cost: [600, 620],
+        cost: 600,
         order: [1, 2],
         calls3: [],
       });

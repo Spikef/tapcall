@@ -26,7 +26,7 @@ describe('AsyncParallelBailHook', () => {
       await testCallAsyncHooks(AsyncParallelBailHook, {
         value1: undefined,
         return: 2,
-        cost: [400, 420],
+        cost: 400,
       });
     });
 
