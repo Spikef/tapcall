@@ -9,9 +9,18 @@ export default class AsyncSeriesLoopHook<
     for (let i = 0; i < this.callbacks.length; i++) {
       const name = this.options[i].name;
       const callback = this.callbacks[i];
-      promise = promise
-        ? promise.then(() => this.createPromise(name, args, callback))
-        : this.createPromise(name, args, callback);
+
+      const run = () => {
+        const runTask = (): Promise<void> => {
+          return this.runCallback(name, callback, args).then((result) => {
+            if (result === undefined) return;
+            return runTask();
+          });
+        };
+        return runTask();
+      };
+
+      promise = promise ? promise.then(run) : run();
     }
     return promise || Promise.resolve();
   }

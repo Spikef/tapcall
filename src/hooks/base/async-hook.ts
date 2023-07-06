@@ -15,8 +15,8 @@ export default class AsyncHook<
     return new Promise<Return>((resolve, reject) => {
       try {
         resolve(callback(...args));
-      } catch (e) {
-        reject(e);
+      } catch (err) {
+        reject(err);
       }
     }).catch((err) => {
       throw this.createError(err, {
@@ -34,8 +34,8 @@ export default class AsyncHook<
     return new Promise<Return>((resolve, reject) => {
       try {
         resolve(callback(...args));
-      } catch (e) {
-        reject(e);
+      } catch (err) {
+        reject(err);
       }
     }).catch((err) => {
       throw this.createError(err, {

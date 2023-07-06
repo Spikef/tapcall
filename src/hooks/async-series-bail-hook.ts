@@ -17,11 +17,11 @@ export default class AsyncSeriesBailHook<
         if (value !== undefined) return Promise.reject(value);
       });
     }
-    return (promise || Promise.resolve()).catch((error) => {
-      if (error instanceof Error) {
-        throw error;
+    return (promise || Promise.resolve()).catch((err) => {
+      if (err instanceof Error) {
+        throw err;
       }
-      return error;
+      return err;
     });
   }
 }

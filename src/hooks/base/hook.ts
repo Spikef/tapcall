@@ -120,15 +120,15 @@ export default class Hook<
     this.callbacks.splice(0, this.callbacks.length);
   }
 
-  protected createError(error: Error | unknown, detail: IErrorDetail) {
-    if (error instanceof Error) {
-      return new HookError(error.message, {
+  protected createError(err: Error | unknown, detail: IErrorDetail) {
+    if (err instanceof Error) {
+      return new HookError(err.message, {
         ...detail,
-        stack: error.stack,
+        stack: err.stack,
         hook: this.name,
       });
     }
-    return new HookError(String(error), { ...detail, hook: this.name });
+    return new HookError(String(err), { ...detail, hook: this.name });
   }
 
   protected runCallback(name: string, callback: Callback, args: Args) {
