@@ -18,7 +18,7 @@ describe('AsyncParallelBailHook', () => {
   });
 
   describe('call', () => {
-    it('should return undefined when no hooks', async () => {
+    it('should return undefined when no hook', async () => {
       await testCallEmptyAsyncHooks(AsyncParallelBailHook);
     });
 
@@ -26,11 +26,11 @@ describe('AsyncParallelBailHook', () => {
       await testCallAsyncHooks(AsyncParallelBailHook, {
         value1: undefined,
         return: 2,
-        cost: 400,
+        cost: 4000,
       });
     });
 
-    it('should reject the first callback that rejects/throws', async () => {
+    it('should reject if any callback rejects/throws', async () => {
       await testCallAsyncHooks(AsyncParallelBailHook, {
         value1: undefined,
         value2: 'error message',
@@ -50,7 +50,7 @@ describe('AsyncParallelBailHook', () => {
       });
     });
 
-    it('should not reject if returned value before rejects/throws', async () => {
+    it('should not reject if a callback returns value before rejects/throws', async () => {
       await testCallAsyncHooks(AsyncParallelBailHook, {
         value1: 1,
         value2: 'not reject this error because 1 resolves a value',

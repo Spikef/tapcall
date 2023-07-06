@@ -18,7 +18,7 @@ describe('SyncBailHook', () => {
   });
 
   describe('call', () => {
-    it('should return undefined when no hooks', () => {
+    it('should return undefined when no hook', () => {
       testCallEmptySyncHooks(SyncBailHook);
     });
 
@@ -31,12 +31,38 @@ describe('SyncBailHook', () => {
       });
     });
 
-    it('should throw an error when callback throws error', () => {
+    it('should throw if any callback throws', () => {
+      testCallSyncHooks(SyncBailHook, {
+        value1: undefined,
+        value2: 'error message',
+        value3: 'not throw this error because 3 will not run',
+        error: true,
+      });
+
       testCallSyncHooks(SyncBailHook, {
         value1: undefined,
         value2: new Error('error message'),
+        value3: new Error('not throw this error because 3 will not run'),
         error: true,
+      });
+    });
+
+    it('should not throw if a callback returns value before throws', () => {
+      testCallSyncHooks(SyncBailHook, {
+        value2: 'not throw this error because 2 will not run',
+        value3: 'not throw this error because 3 will not run',
+        return: 1,
+        order: [1],
+        calls2: [],
         calls3: [],
+      });
+
+      testCallSyncHooks(SyncBailHook, {
+        value2: new Error('not throw this error because 2 will not run'),
+        value3: new Error('not throw this error because 3 will not run'),
+        return: 1,
+        order: [1],
+        calls2: [],
       });
     });
   });

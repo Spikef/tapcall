@@ -18,7 +18,7 @@ describe('AsyncSeriesBailHook', () => {
   });
 
   describe('call', () => {
-    it('should should return undefined when no hooks', async () => {
+    it('should return undefined when no hook', async () => {
       await testCallEmptyAsyncHooks(AsyncSeriesBailHook);
     });
 
@@ -26,13 +26,13 @@ describe('AsyncSeriesBailHook', () => {
       await testCallAsyncHooks(AsyncSeriesBailHook, {
         value1: undefined,
         return: 2,
-        cost: 600,
+        cost: 6000,
         order: [1, 2],
         calls3: [],
       });
     });
 
-    it('should reject the first callback that rejects/throws', async () => {
+    it('should reject if any callback rejects/throws', async () => {
       await testCallAsyncHooks(AsyncSeriesBailHook, {
         value1: undefined,
         value2: 'error message',
@@ -48,7 +48,7 @@ describe('AsyncSeriesBailHook', () => {
       });
     });
 
-    it('should not reject if returned value before rejects/throws', async () => {
+    it('should not reject if a callback returns value before rejects/throws', async () => {
       await testCallAsyncHooks(AsyncSeriesBailHook, {
         value1: 1,
         value2: 'not reject this error because 2 will not run',

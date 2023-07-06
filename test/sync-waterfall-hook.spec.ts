@@ -29,7 +29,7 @@ describe('SyncWaterfallHook', () => {
       });
     });
 
-    it('should throw an error when callback throws error', () => {
+    it('should throw if any callback throws', () => {
       testCallSyncHooks(SyncWaterfallHook, {
         value1: undefined,
         value2: new Error('error message'),

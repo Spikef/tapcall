@@ -18,11 +18,11 @@ describe('AsyncSeriesLoopHook', () => {
   });
 
   describe('call', () => {
-    it('should return undefined when no hooks', async () => {
+    it('should return undefined when no hook', async () => {
       await testCallEmptyAsyncHooks(AsyncSeriesLoopHook);
     });
 
-    it('should return undefined when any hooks', async () => {
+    it('should return undefined no matter what value hooks return', async () => {
       await testCallAsyncHooks(AsyncSeriesLoopHook);
     });
   });

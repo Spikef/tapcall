@@ -18,17 +18,17 @@ describe('AsyncSeriesHook', () => {
   });
 
   describe('call', () => {
-    it('should return undefined when no hooks', async () => {
+    it('should return undefined when no hook', async () => {
       await testCallEmptyAsyncHooks(AsyncSeriesHook);
     });
 
-    it('should return undefined when any hooks', async () => {
+    it('should return undefined no matter what value hooks return', async () => {
       await testCallAsyncHooks(AsyncSeriesHook, {
-        cost: 700,
+        cost: 7000,
       });
     });
 
-    it('should reject the first callback that rejects/throws', async () => {
+    it('should reject if any callback rejects/throws', async () => {
       await testCallAsyncHooks(AsyncSeriesHook, {
         value1: undefined,
         value2: 'error message',

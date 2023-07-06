@@ -183,7 +183,7 @@ export const testCallAsyncHooks = async (
         setTimeout(() => resolve(0), timestamp);
       }).then(() => {
         running--;
-        if (!running) cost += timestamp * 10;
+        if (!running) cost += timestamp * 100;
         if (value instanceof Error) {
           throw value;
         } else if (typeof value === 'string') {

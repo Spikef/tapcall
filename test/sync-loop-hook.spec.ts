@@ -18,11 +18,11 @@ describe('SyncLoopHook', () => {
   });
 
   describe('call', () => {
-    it('should return undefined when no hooks', () => {
+    it('should return undefined when no hook', () => {
       testCallEmptySyncHooks(SyncLoopHook);
     });
 
-    it('should return undefined when any hooks', () => {
+    it('should return undefined no matter what value hooks return', () => {
       let loopCount = 0;
       testCallSyncHooks(SyncLoopHook, {
         value1: () => (++loopCount < 3 ? 1 : undefined),
@@ -35,7 +35,7 @@ describe('SyncLoopHook', () => {
       });
     });
 
-    it('should throw an error when callback throws error', () => {
+    it('should throw if any callback throws', () => {
       testCallSyncHooks(SyncLoopHook, {
         value1: undefined,
         value2: new Error('error message'),

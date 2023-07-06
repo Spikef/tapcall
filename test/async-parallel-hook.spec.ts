@@ -18,13 +18,13 @@ describe('AsyncParallelHook', () => {
   });
 
   describe('call', () => {
-    it('should return undefined when no hooks', async () => {
+    it('should return undefined when no hook', async () => {
       await testCallEmptyAsyncHooks(AsyncParallelHook);
     });
 
-    it('should return undefined when any hooks', async () => {
+    it('should return undefined no matter what value hooks return', async () => {
       await testCallAsyncHooks(AsyncParallelHook, {
-        cost: 400,
+        cost: 4000,
       });
     });
 

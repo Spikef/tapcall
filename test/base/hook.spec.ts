@@ -14,17 +14,38 @@ describe('BaseHook', () => {
   });
 
   describe('call', () => {
-    it('should return undefined when no hooks', () => {
+    it('should return undefined when no hook', () => {
       testCallEmptySyncHooks(Hook);
     });
 
-    it('should return undefined when any hooks', () => {
+    it('should return undefined no matter what value hooks return', () => {
       testCallSyncHooks(Hook);
     });
 
-    it('should throw an error when callback throws error', () => {
+    it('should throw if any callback throws', () => {
+      testCallSyncHooks(Hook, {
+        value1: undefined,
+        value2: 'error message',
+        value3: 'not reject this error because 3 will not run',
+        error: true,
+      });
+
+      testCallSyncHooks(Hook, {
+        value1: undefined,
+        value2: new Error('error message'),
+        value3: new Error('not reject this error because 3 will not run'),
+        error: true,
+      });
+
+      testCallSyncHooks(Hook, {
+        value2: 'error message',
+        value3: 'not reject this error because 3 will not run',
+        error: true,
+      });
+
       testCallSyncHooks(Hook, {
         value2: new Error('error message'),
+        value3: new Error('not reject this error because 3 will not run'),
         error: true,
       });
     });
