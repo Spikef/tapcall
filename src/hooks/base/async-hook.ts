@@ -25,23 +25,4 @@ export default class AsyncHook<
       });
     });
   }
-
-  protected createPromise<Return>(
-    name: string,
-    args: Args,
-    callback: (...args: Args) => Return | Promise<Return>,
-  ) {
-    return new Promise<Return>((resolve, reject) => {
-      try {
-        resolve(callback(...args));
-      } catch (err) {
-        reject(err);
-      }
-    }).catch((err) => {
-      throw this.createError(err, {
-        type: 'call',
-        receiver: name,
-      });
-    });
-  }
 }

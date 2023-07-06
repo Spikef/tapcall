@@ -11,8 +11,8 @@ export default class AsyncSeriesWaterfallHook<
       const callback = this.callbacks[i];
       promise = (
         promise
-          ? promise.then(() => this.createPromise(name, newArgs, callback))
-          : this.createPromise(name, newArgs, callback)
+          ? promise.then(() => this.runCallback(name, callback, newArgs))
+          : this.runCallback(name, callback, newArgs)
       ).then((waterfall) => {
         if (waterfall !== undefined) newArgs[0] = waterfall;
         return newArgs[0];

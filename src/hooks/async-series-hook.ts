@@ -10,8 +10,8 @@ export default class AsyncSeriesHook<
       const name = this.options[i].name;
       const callback = this.callbacks[i];
       promise = promise
-        ? promise.then(() => this.createPromise(name, args, callback))
-        : this.createPromise(name, args, callback);
+        ? promise.then(() => this.runCallback(name, callback, args))
+        : this.runCallback(name, callback, args);
     }
     return promise?.then(() => undefined) || Promise.resolve();
   }
