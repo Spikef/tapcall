@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.build.json",
+  "compilerOptions": {
+    "paths": {
+      "common": ["test/__common__/index"],
+      "tapcall": ["src/index"],
+      "tapcall/*": ["src/*"]
+    }
+  },
+  "include": ["src", "test"]
+}
