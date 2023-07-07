@@ -32,7 +32,7 @@ describe('AsyncParallelHook', () => {
       await testCallAsyncHooks(AsyncParallelHook, {
         value1: 'not reject this error because 1 rejects after 2',
         value2: 'error message',
-        value3: 3,
+        value3: undefined,
         error: true,
         order: [1, 2, 3],
         calls3: [10, 20],
@@ -41,7 +41,23 @@ describe('AsyncParallelHook', () => {
       await testCallAsyncHooks(AsyncParallelHook, {
         value1: new Error('not reject this error because 1 throws after 2'),
         value2: new Error('error message'),
-        value3: 3,
+        value3: undefined,
+        error: true,
+        order: [1, 2, 3],
+        calls3: [10, 20],
+      });
+
+      await testCallAsyncHooks(AsyncParallelHook, {
+        value1: 'not reject this error because 1 rejects after 2',
+        value2: 'error message',
+        error: true,
+        order: [1, 2, 3],
+        calls3: [10, 20],
+      });
+
+      await testCallAsyncHooks(AsyncParallelHook, {
+        value1: new Error('not reject this error because 1 throws after 2'),
+        value2: new Error('error message'),
         error: true,
         order: [1, 2, 3],
         calls3: [10, 20],

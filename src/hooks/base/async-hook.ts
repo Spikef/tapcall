@@ -5,7 +5,7 @@ import Hook from './hook';
  */
 export default class AsyncHook<
   Args extends unknown[] = [],
-  Return = void,
+  Return = undefined,
 > extends Hook<Args, Return | Promise<Return>> {
   protected runCallback(
     name: string,

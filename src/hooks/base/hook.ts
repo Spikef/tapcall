@@ -20,7 +20,7 @@ export interface IOption {
  */
 export default class Hook<
   Args extends unknown[] = [],
-  Return = void,
+  Return = undefined,
   Callback extends (...args: Args) => Return = (...args: Args) => Return,
 > {
   protected readonly options: IOption[] = [];
@@ -87,12 +87,17 @@ export default class Hook<
     this.callbacks[i] = callback;
   }
 
-  call(...args: Args): void {
-    for (let i = 0; i < this.callbacks.length; i++) {
-      const name = this.options[i].name;
-      const callback = this.callbacks[i];
+  call(...args: Args) {
+    const options = [...this.options];
+    const callbacks = [...this.callbacks];
+    const run = (i: number) => {
+      if (i >= callbacks.length) return;
+      const name = options[i].name;
+      const callback = callbacks[i];
       this.runCallback(name, callback, args);
-    }
+      run(i + 1);
+    };
+    run(0);
   }
 
   clear(callbacks: string | Callback | Array<string | Callback>) {

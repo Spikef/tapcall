@@ -83,15 +83,15 @@ describe('BaseHook', () => {
 
     describe('tap order', () => {
       const hook = new Hook('hook');
-      const calls: number[] = [];
-      const fn1 = () => calls.push(1);
-      const fn2 = () => calls.push(2);
-      const fn3 = () => calls.push(3);
-      const fn4 = () => calls.push(4);
-      const fn5 = () => calls.push(5);
+      const call = jest.fn();
+      const fn1 = () => call(1);
+      const fn2 = () => call(2);
+      const fn3 = () => call(3);
+      const fn4 = () => call(4);
+      const fn5 = () => call(5);
 
       beforeEach(() => {
-        calls.length = 0;
+        call.mockClear();
         hook.clearAll();
       });
 
@@ -105,7 +105,7 @@ describe('BaseHook', () => {
           fn2,
         );
         hook.call();
-        expect(calls).toEqual([2, 1]);
+        expect(call.mock.calls).toEqual([[2], [1]]);
       });
 
       it('should insert C before A and B', () => {
@@ -119,7 +119,7 @@ describe('BaseHook', () => {
           fn3,
         );
         hook.call();
-        expect(calls).toEqual([3, 1, 2]);
+        expect(call.mock.calls).toEqual([[3], [1], [2]]);
       });
 
       it('should insert C between A and B', () => {
@@ -133,7 +133,7 @@ describe('BaseHook', () => {
           fn3,
         );
         hook.call();
-        expect(calls).toEqual([1, 3, 2]);
+        expect(call.mock.calls).toEqual([[1], [3], [2]]);
       });
 
       it('should insert hooks and in stages', () => {
@@ -167,7 +167,7 @@ describe('BaseHook', () => {
           fn5,
         );
         hook.call();
-        expect(calls).toEqual([5, 4, 3, 2, 1]);
+        expect(call.mock.calls).toEqual([[5], [4], [3], [2], [1]]);
       });
 
       it('should insert hooks before all', () => {
@@ -183,7 +183,7 @@ describe('BaseHook', () => {
         );
         hook.tap('E', fn5);
         hook.call();
-        expect(calls).toEqual([4, 1, 2, 3, 5]);
+        expect(call.mock.calls).toEqual([[4], [1], [2], [3], [5]]);
       });
 
       it('should ignore stage while before is not undefined', () => {
@@ -198,7 +198,7 @@ describe('BaseHook', () => {
           fn3,
         );
         hook.call();
-        expect(calls).toEqual([3, 1, 2]);
+        expect(call.mock.calls).toEqual([[3], [1], [2]]);
       });
 
       it('should ignore before while no before hook added', () => {
@@ -211,7 +211,7 @@ describe('BaseHook', () => {
           fn2,
         );
         hook.call();
-        expect(calls).toEqual([1, 2]);
+        expect(call.mock.calls).toEqual([[1], [2]]);
       });
 
       it('should ignore before which is added previously', () => {
@@ -231,22 +231,22 @@ describe('BaseHook', () => {
           fn3,
         );
         hook.call();
-        expect(calls).toEqual([3, 1, 2]);
+        expect(call.mock.calls).toEqual([[3], [1], [2]]);
       });
     });
   });
 
   describe('clear', () => {
     const hook = new Hook('hook');
-    const calls: number[] = [];
-    const fn1 = () => calls.push(1);
-    const fn2 = () => calls.push(2);
-    const fn3 = () => calls.push(3);
-    const fn4 = () => calls.push(4);
-    const fn5 = () => calls.push(5);
+    const call = jest.fn();
+    const fn1 = () => call(1);
+    const fn2 = () => call(2);
+    const fn3 = () => call(3);
+    const fn4 = () => call(4);
+    const fn5 = () => call(5);
 
     beforeEach(() => {
-      calls.length = 0;
+      call.mockClear();
       hook.clearAll();
       hook.tap('A', fn1);
       hook.tap('B', fn2);
@@ -258,31 +258,31 @@ describe('BaseHook', () => {
     it('should clear hooks by name', () => {
       hook.clear('A');
       hook.call();
-      expect(calls).toEqual([2, 3, 4, 5]);
+      expect(call.mock.calls).toEqual([[2], [3], [4], [5]]);
     });
 
     it('should clear hooks by names', () => {
       hook.clear(['A', 'B', 'C']);
       hook.call();
-      expect(calls).toEqual([4, 5]);
+      expect(call.mock.calls).toEqual([[4], [5]]);
     });
 
     it('should clear hooks by callback', () => {
       hook.clear(fn1);
       hook.call();
-      expect(calls).toEqual([2, 3, 4, 5]);
+      expect(call.mock.calls).toEqual([[2], [3], [4], [5]]);
     });
 
     it('should clear hooks by callbacks', () => {
       hook.clear([fn1, fn2, fn3]);
       hook.call();
-      expect(calls).toEqual([4, 5]);
+      expect(call.mock.calls).toEqual([[4], [5]]);
     });
 
     it('should clear all hooks', () => {
       hook.clearAll();
       hook.call();
-      expect(calls).toEqual([]);
+      expect(call.mock.calls).toEqual([]);
     });
   });
 });

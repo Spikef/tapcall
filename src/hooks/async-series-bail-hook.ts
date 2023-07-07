@@ -2,26 +2,20 @@ import AsyncHook from './base/async-hook';
 
 export default class AsyncSeriesBailHook<
   Args extends unknown[] = [],
-  Return = void,
-> extends AsyncHook<Args, Return | void> {
-  call(...args: Args): Promise<Return | void> {
-    let promise: Promise<Return | void> | undefined;
-    for (let i = 0; i < this.callbacks.length; i++) {
-      const name = this.options[i].name;
-      const callback = this.callbacks[i];
-      promise = (
-        promise
-          ? promise.then(() => this.runCallback(name, callback, args))
-          : this.runCallback(name, callback, args)
-      ).then((value) => {
-        if (value !== undefined) return Promise.reject(value);
+  Return = undefined,
+> extends AsyncHook<Args, Return | undefined> {
+  call(...args: Args): Promise<Return | undefined> {
+    const options = [...this.options];
+    const callbacks = [...this.callbacks];
+    const run = (i: number): Promise<Return | undefined> => {
+      if (i >= callbacks.length) return Promise.resolve(undefined);
+      const option = options[i];
+      const callback = callbacks[i];
+      return this.runCallback(option.name, callback, args).then((value) => {
+        if (value !== undefined) return value;
+        return run(i + 1);
       });
-    }
-    return (promise || Promise.resolve()).catch((err) => {
-      if (err instanceof Error) {
-        throw err;
-      }
-      return err;
-    });
+    };
+    return run(0);
   }
 }

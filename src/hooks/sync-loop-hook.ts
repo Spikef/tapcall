@@ -2,14 +2,19 @@ import Hook from './base/hook';
 
 export default class SyncLoopHook<
   Args extends unknown[] = [],
-  Return = void,
+  Return = undefined,
 > extends Hook<Args, Return | undefined> {
   call(...args: Args): undefined {
-    for (let i = 0; i < this.callbacks.length; i++) {
-      const name = this.options[i].name;
-      const callback = this.callbacks[i];
+    const options = [...this.options];
+    const callbacks = [...this.callbacks];
+    const run = (i: number): undefined => {
+      if (i >= callbacks.length) return;
+      const name = options[i].name;
+      const callback = callbacks[i];
       const result = this.runCallback(name, callback, args);
-      if (result !== undefined) i = -1;
-    }
+      if (result !== undefined) return run(0);
+      return run(i + 1);
+    };
+    return run(0);
   }
 }

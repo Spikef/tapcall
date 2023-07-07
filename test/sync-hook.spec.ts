@@ -42,7 +42,14 @@ describe('SyncHook', () => {
       });
 
       testCallSyncHooks(SyncHook, {
+        value2: 'error message',
+        value3: 'not throw this error because 3 will not run',
+        error: true,
+      });
+
+      testCallSyncHooks(SyncHook, {
         value2: new Error('error message'),
+        value3: new Error('not throw this error because 3 will not run'),
         error: true,
       });
     });

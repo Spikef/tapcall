@@ -2,15 +2,15 @@ import AsyncHook from './base/async-hook';
 
 export default class AsyncParallelHook<
   Args extends unknown[] = [],
-  Return = void,
+  Return = undefined,
 > extends AsyncHook<Args, Return> {
-  call(...args: Args): Promise<void> {
-    const promises = [];
-    for (let i = 0; i < this.callbacks.length; i++) {
-      const name = this.options[i].name;
-      const callback = this.callbacks[i];
-      promises.push(this.runCallback(name, callback, args));
-    }
+  call(...args: Args): Promise<undefined> {
+    const options = [...this.options];
+    const callbacks = [...this.callbacks];
+    const promises: Promise<Return>[] = callbacks.map((callback, i) => {
+      const name = options[i].name;
+      return this.runCallback(name, callback, args);
+    });
     return Promise.all(promises).then(() => undefined);
   }
 }

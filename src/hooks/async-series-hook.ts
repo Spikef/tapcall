@@ -2,17 +2,17 @@ import AsyncHook from './base/async-hook';
 
 export default class AsyncSeriesHook<
   Args extends unknown[] = [],
-  Return = void,
-> extends AsyncHook<Args, Return | void> {
-  call(...args: Args): Promise<void> {
-    let promise: Promise<Return | void> | undefined;
-    for (let i = 0; i < this.callbacks.length; i++) {
-      const name = this.options[i].name;
-      const callback = this.callbacks[i];
-      promise = promise
-        ? promise.then(() => this.runCallback(name, callback, args))
-        : this.runCallback(name, callback, args);
-    }
-    return promise?.then(() => undefined) || Promise.resolve();
+  Return = undefined,
+> extends AsyncHook<Args, Return | undefined> {
+  call(...args: Args): Promise<undefined> {
+    const options = [...this.options];
+    const callbacks = [...this.callbacks];
+    const run = (i: number): Promise<undefined> => {
+      if (i >= callbacks.length) return Promise.resolve(undefined);
+      const name = options[i].name;
+      const callback = callbacks[i];
+      return this.runCallback(name, callback, args).then(() => run(i + 1));
+    };
+    return run(0);
   }
 }
