@@ -9,8 +9,13 @@ import {
 
 describe('BaseHook', () => {
   describe('new', () => {
-    testCreateNewHookNoArgs(Hook);
-    testCreateNewHookWithArgs(Hook);
+    it('should allow to create hooks without args', () => {
+      testCreateNewHookNoArgs(Hook);
+    });
+
+    it('should allow to create hooks with args', () => {
+      testCreateNewHookWithArgs(Hook);
+    });
   });
 
   describe('call', () => {
@@ -53,6 +58,18 @@ describe('BaseHook', () => {
 
   describe('tap', () => {
     describe('tap error', () => {
+      it('should throw an error when callback is not a function', () => {
+        const hook = new Hook('hook');
+        // @ts-ignore
+        expect(() => hook.tap('A', null)).toThrowError(
+          new HookError('callback must be a function', {
+            type: 'tap',
+            hook: 'hook',
+            receiver: 'A',
+          }),
+        );
+      });
+
       it('should throw an error when tap a same name', () => {
         const mock1 = jest.fn();
         const mock2 = jest.fn();

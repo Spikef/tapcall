@@ -30,9 +30,14 @@ export default class Hook<
 
   tap(option: string | IOption, callback: Callback) {
     if (typeof option === 'string') option = { name: option };
-    if (typeof callback !== 'function') return;
 
     const name = option.name;
+    if (typeof callback !== 'function') {
+      throw this.createError('callback must be a function', {
+        type: 'tap',
+        receiver: name,
+      });
+    }
     if (this.options.some((opt) => opt.name === name)) {
       throw this.createError(`repeat name: ${name}`, {
         type: 'tap',
@@ -73,9 +78,6 @@ export default class Hook<
           before.delete(n);
           continue;
         }
-        if (before.size > 0) {
-          continue;
-        }
       }
       if (s <= stage) {
         i++;
@@ -105,8 +107,6 @@ export default class Hook<
       callbacks = [callbacks];
     }
     callbacks.forEach((callback) => {
-      if (!callback) return;
-
       let index: number;
       if (typeof callback === 'function') {
         index = this.callbacks.indexOf(callback);

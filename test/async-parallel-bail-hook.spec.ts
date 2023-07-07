@@ -52,7 +52,6 @@ describe('AsyncParallelBailHook', () => {
 
     it('should not reject if a callback returns value before rejects/throws', async () => {
       await testCallAsyncHooks(AsyncParallelBailHook, {
-        value1: 1,
         value2: 'not reject this error because 1 resolves a value',
         value3: 'not reject this error because 1 resolves a value',
         return: 1,
@@ -61,7 +60,6 @@ describe('AsyncParallelBailHook', () => {
       });
 
       await testCallAsyncHooks(AsyncParallelBailHook, {
-        value1: 1,
         value2: new Error('not reject this error because 1 resolves a value'),
         value3: new Error('not reject this error because 1 resolves a value'),
         return: 1,

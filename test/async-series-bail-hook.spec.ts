@@ -50,7 +50,6 @@ describe('AsyncSeriesBailHook', () => {
 
     it('should not reject if a callback returns value before rejects/throws', async () => {
       await testCallAsyncHooks(AsyncSeriesBailHook, {
-        value1: 1,
         value2: 'not reject this error because 2 will not run',
         value3: 'not reject this error because 3 will not run',
         return: 1,
@@ -60,7 +59,6 @@ describe('AsyncSeriesBailHook', () => {
       });
 
       await testCallAsyncHooks(AsyncSeriesBailHook, {
-        value1: 1,
         value2: new Error('not reject this error because 2 will not run'),
         value3: new Error('not reject this error because 3 will not run'),
         return: 1,
